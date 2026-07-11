@@ -1,3 +1,5 @@
+import AdminShell from "@/components/Admin/layout/AdminLayout";
+
 export const metadata = {
   title: "Admin Panel",
   robots: {
@@ -6,13 +8,6 @@ export const metadata = {
   },
 };
 
-export default function AdminLayout({ children }) {
-  return children;
-}
-
-
-import AdminLayout from "@/components/Admin/layout/AdminLayout";
-
 export default function Layout({ children }) {
-  return <AdminLayout>{children}</AdminLayout>;
+  return <AdminShell>{children}</AdminShell>;
 }
