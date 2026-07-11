@@ -8,7 +8,7 @@ export const metadata = {
   openGraph: {
     title: "Contact - ARASFIRMA",
     description:
-      "Get in touch with Arasfirma for PUF panel inquiries, quotes, and support.",
+      "Core Values That Drive Us",
     type: "website",
     url: "https://www.arasfirma.com/contact/",
   },

@@ -1,14 +1,14 @@
 import CareerPage from "@/components/Career";
 
 export const metadata = {
-  title: "Career - ARASFIRMA",
+  title: "job - ARASFIRMA",
   description:
-    "Explore career opportunities at Arasfirma and join our growing team.",
+    "At Arasfirma, we don’t just manufacture PUF panels — we shape the future of sustainable construction. If you're driven by purpose, inspired by progress, and",
   alternates: { canonical: "https://www.arasfirma.com/career/" },
   openGraph: {
     title: "Career - ARASFIRMA",
     description:
-      "Explore career opportunities at Arasfirma and join our growing team.",
+      "At Arasfirma, we don’t just manufacture PUF panels — we shape the future of sustainable construction. If you're driven by purpose, inspired by progress, and",
     type: "website",
     url: "https://www.arasfirma.com/career/",
   },
