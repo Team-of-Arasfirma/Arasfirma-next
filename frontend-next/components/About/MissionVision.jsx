@@ -1,21 +1,10 @@
-// ✅ No imports needed at top — DELETE these 3 lines
-
-// import missionIcon from "../public/assets/icon/OurMission.svg";
-
-// import visionIcon  from "../public/assets/icon/OurVision.svg";
-
-// import valueIcon   from "../public/assets/icon/OurVision.svg";
-
+//Misson Vision and Value cards for About page
 const cards = [
   {
     icon: "/assets/icon/OurMission.svg", // ✅ just the path string
-
     title: "Our Mission",
-
     color: "#fef2f2",
-
     border: "#fecaca",
-
     text: "At Arasfirma, Our Mission Is To Deliver Industry-Leading Roofing Solutions That Ensure Safety, Durability, And Peak Performance For Both Industrial And Domestic Applications.",
   },
 
@@ -27,19 +16,14 @@ const cards = [
     color: "#eff6ff",
 
     border: "#bfdbfe",
-
     text: "Our Vision Is To Revolutionize The Roofing Landscape In India By Creating A Brighter, More Sustainable Future Where Innovation, Quality, And Environmental Responsibility Go Hand In Hand.",
   },
 
   {
     icon: "/assets/icon/OurValue.svg", // ✅ fixed — was OurVision.svg before
-
     title: "Our Value",
-
     color: "#fdf4ff",
-
     border: "#e9d5ff",
-
     text: "At Arasfirma, Our Values Are Rooted In Innovation, Quality, And Integrity. We Are Committed To Providing Reliable And Sustainable Solutions That Prioritize Customer Satisfaction.",
   },
 ];
@@ -64,13 +48,9 @@ const MissionVision = () => {
           {cards.map((card, i) => (
             <div
               key={card.title}
-
               data-animate="up"
-
               data-delay={i * 150}
-
               className="rounded-2xl p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-
               style={{
                 background: card.color,
                 border: `1.5px solid ${card.border}`,
@@ -79,9 +59,7 @@ const MissionVision = () => {
               <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 bg-white shadow-sm">
                 <img
                   src={card.icon}
-
                   alt={card.title}
-
                   className="w-7 h-7 object-contain"
                 />
               </div>
