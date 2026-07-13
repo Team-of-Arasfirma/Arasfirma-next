@@ -123,13 +123,13 @@ and commercial buildings across India.`,
     joints: [
       {
         name: "Single Tongue & Groove Wall Panel",
-        image: "/assets/joints/joint1.png",
+        image: "/assets/joints/joint2.png",
         desc: "Watertight concealed fix system",
       },
 
       {
         name: "Double Tongue & Groove Wall Panel",
-        image: "/assets/joints/joint2.png",
+        image: "/assets/joints/joint1.png",
         desc: "Low profile aesthetic finish",
       },
 
