@@ -151,7 +151,7 @@ export default function Blog({
         const filteredBlogs = publishedBlogs.filter((blog) => {
           const matchesSearch =
             !search ||
-            [blog.title, blog.content, blog.category, blog.author]
+            [blog.title, blog.excerpt, blog.category, blog.author]
               .filter(Boolean)
               .join(" ")
               .toLowerCase()
@@ -160,7 +160,7 @@ export default function Blog({
           const matchesCategory =
             activeCategory === "All" ||
             normalizeCategory(blog.category) ===
-              normalizeCategory(activeCategory);
+            normalizeCategory(activeCategory);
 
           return matchesSearch && matchesCategory;
         });
@@ -276,11 +276,10 @@ export default function Blog({
               key={cat}
               type="button"
               onClick={() => handleCategory(cat)}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
-                activeCategory === cat
+              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${activeCategory === cat
                   ? "bg-red-500 text-white shadow-md"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
+                }`}
             >
               {cat}
             </button>
@@ -424,13 +423,13 @@ export default function Blog({
 
                           {blog.createdAt
                             ? new Date(blog.createdAt).toLocaleDateString(
-                                "en-US",
-                                {
-                                  month: "long",
-                                  day: "numeric",
-                                  year: "numeric",
-                                },
-                              )
+                              "en-US",
+                              {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric",
+                              },
+                            )
                             : ""}
                         </div>
 
@@ -439,7 +438,7 @@ export default function Blog({
                         </h2>
 
                         <p className="text-gray-500 text-sm mt-2 line-clamp-2 leading-relaxed">
-                          {getCleanPreview(blog.content)}
+                          {blog.excerpt || blog.metaDescription || ""}
                         </p>
 
                         <div className="flex items-center gap-2 mt-4 text-red-500 font-bold text-sm group-hover:gap-3 transition-all">
@@ -482,11 +481,10 @@ export default function Blog({
                     key={i}
                     type="button"
                     onClick={() => setPage(i + 1)}
-                    className={`w-9 h-9 rounded-full text-sm font-semibold transition-colors ${
-                      page === i + 1
+                    className={`w-9 h-9 rounded-full text-sm font-semibold transition-colors ${page === i + 1
                         ? "bg-red-500 text-white"
                         : "border border-gray-200 text-gray-600 hover:border-red-400 hover:text-red-500"
-                    }`}
+                      }`}
                   >
                     {i + 1}
                   </button>
