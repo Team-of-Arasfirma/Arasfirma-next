@@ -35,17 +35,28 @@ const badgeStyle = (category) => {
   return map[category] || { bg: "bg-gray-500", text: category };
 };
 
+const decodeHtmlEntities = (value) => {
+  if (!value) return "";
+
+  if (typeof window === "undefined") {
+    return value
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'");
+  }
+
+  const txt = document.createElement("textarea");
+  txt.innerHTML = value;
+  return txt.value;
+};
+
 const getCleanPreview = (content) => {
   if (!content) return "";
 
-  let clean = content;
-
-  // Decode HTML entities only in browser.
-  if (clean.includes("&lt;") || clean.includes("&gt;")) {
-    const txt = document.createElement("textarea");
-    txt.innerHTML = clean;
-    clean = txt.value;
-  }
+  let clean = decodeHtmlEntities(content);
 
   // Remove HTML tags.
   clean = clean.replace(/<[^>]+>/g, "");
@@ -75,15 +86,32 @@ const SkeletonCard = () => (
   </div>
 );
 
-export default function Blog() {
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function Blog({
+  initialBlogs = [],
+  initialPagination = {},
+}) {
+  const firstBlogs = Array.isArray(initialBlogs)
+    ? initialBlogs.filter((blog) => blog && blog.published !== false)
+    : [];
+
+  const [blogs, setBlogs] = useState(firstBlogs);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState({});
-  const [totalArticles, setTotalArticles] = useState(0);
-  const [latestYear, setLatestYear] = useState(new Date().getFullYear());
+  const [pagination, setPagination] = useState(initialPagination || {});
+  const [totalArticles, setTotalArticles] = useState(
+    initialPagination?.total || firstBlogs.length || 0,
+  );
+  const [latestYear, setLatestYear] = useState(() => {
+    if (firstBlogs.length === 0) return new Date().getFullYear();
+
+    const years = firstBlogs
+      .map((blog) => new Date(blog.createdAt).getFullYear())
+      .filter(Boolean);
+
+    return years.length > 0 ? Math.max(...years) : new Date().getFullYear();
+  });
 
   const LIMIT = 9;
 
@@ -91,6 +119,22 @@ export default function Blog() {
     let isActive = true;
 
     const loadBlogs = async () => {
+      // First page without filter already came from server.
+      // So we avoid showing skeleton in initial HTML.
+      const shouldUseServerBlogs =
+        page === 1 &&
+        search.trim() === "" &&
+        activeCategory === "All" &&
+        firstBlogs.length > 0;
+
+      if (shouldUseServerBlogs) {
+        setBlogs(firstBlogs);
+        setPagination(initialPagination || {});
+        setTotalArticles(initialPagination?.total || firstBlogs.length || 0);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
 
       try {
@@ -328,6 +372,7 @@ export default function Blog() {
                           <img
                             src={blog.image}
                             alt={blog.title}
+                            loading="lazy"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             onError={(e) => {
                               e.currentTarget.src =
