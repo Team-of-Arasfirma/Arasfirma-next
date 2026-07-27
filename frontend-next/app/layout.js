@@ -64,6 +64,10 @@ export const metadata = {
       "Leading PUF panel manufacturer offering insulated roofing, wall panels, clean room panels, cold storage panels, and industrial building solutions.",
     images: ["/assets/logo/logo.png"],
   },
+  
+   verification: {
+    google: "VAzIoDCn6PtZWiQ15AZvvkyZNtn_dR12ds9d_ydjE-8",
+  },
 
   icons: {
     icon: "/assets/logo/logo.png",
