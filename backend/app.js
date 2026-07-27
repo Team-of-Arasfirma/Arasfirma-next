@@ -43,6 +43,8 @@ app.use(
       "https://arasfirma-final.vercel.app",
       "https://arasfirma.com",
       "https://www.arasfirma.com",
+      "https://arasfirma.in",
+      "https://www.arasfirma.in",
       process.env.CLIENT_URL,
     ].filter(Boolean),
     credentials: true,
@@ -66,6 +68,8 @@ app.use(
           "https://arasfirma-next.vercel.app",
           "https://arasfirma.com",
           "https://www.arasfirma.com",
+          "https://arasfirma.in",
+          "https://www.arasfirma.in"
         ],
       },
     },
