@@ -3,9 +3,18 @@ import Blog from "../models/Blog.js";
 
 const router = express.Router();
 
+const cleanPath = (value = "") =>
+  String(value)
+    .trim()
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "");
+
 router.get("/sitemap.xml", async (req, res) => {
   try {
-    const siteUrl = process.env.SITE_URL || "https://arasfirma.co";
+    const siteUrl = (process.env.SITE_URL || "https://www.arasfirma.com").replace(
+      /\/+$/,
+      ""
+    );
 
     const staticPages = [
       "",
@@ -22,7 +31,10 @@ router.get("/sitemap.xml", async (req, res) => {
       "concealed",
     ];
 
-    const blogs = await Blog.find({}, "slug updatedAt createdAt").lean();
+    const blogs = await Blog.find(
+      { published: true },
+      "slug categorySlug updatedAt createdAt"
+    ).lean();
 
     const staticUrls = staticPages.map((page) => ({
       loc: page ? `${siteUrl}/${page}` : `${siteUrl}/`,
@@ -33,17 +45,22 @@ router.get("/sitemap.xml", async (req, res) => {
 
     const blogUrls = blogs
       .filter((blog) => blog.slug)
-      .map((blog) => ({
-        loc: `${siteUrl}/puf-panels/${blog.slug}`,
-        lastmod: blog.updatedAt || blog.createdAt || new Date(),
-        changefreq: "weekly",
-        priority: "0.7",
-      }));
+      .map((blog) => {
+        const categorySlug = cleanPath(blog.categorySlug || "puf-panels");
+        const slug = cleanPath(blog.slug);
+
+        return {
+          loc: `${siteUrl}/${categorySlug}/${slug}`,
+          lastmod: blog.updatedAt || blog.createdAt || new Date(),
+          changefreq: "weekly",
+          priority: "0.7",
+        };
+      });
 
     const urls = [...staticUrls, ...blogUrls];
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls
   .map(
     (url) => `  <url>

@@ -19,6 +19,21 @@ const CATEGORIES = [
   "Agriculture",
 ];
 
+const URL_CATEGORIES = [
+  {
+    label: "PUF Panels",
+    value: "puf-panels",
+  },
+  {
+    label: "PUF Panel Roof",
+    value: "puf-panel-roof",
+  },
+  {
+    label: "PUF Panel Wall",
+    value: "puf-panel-wall",
+  },
+];
+
 const generateSlug = (title) =>
   title
     .toLowerCase()
@@ -63,6 +78,7 @@ const initialForm = {
   image: "",
   author: "Admin",
   category: "General",
+  categorySlug: "puf-panels",
   published: false,
   metaTitle: "",
   metaDescription: "",
@@ -174,6 +190,7 @@ export default function Blogs() {
       image: blog.image || "",
       author: blog.author || "Admin",
       category: blog.category || "General",
+      categorySlug: blog.categorySlug || "puf-panels",
       published: blog.published || false,
       metaTitle: blog.metaTitle || "",
       metaDescription: blog.metaDescription || "",
@@ -275,6 +292,7 @@ export default function Blogs() {
 
     const payload = {
       ...form,
+      categorySlug: form.categorySlug || "puf-panels",
       content: cleanedHtmlContent,
     };
 
@@ -341,6 +359,7 @@ export default function Blogs() {
     try {
       await api.put(`/blogs/${blog._id}`, {
         ...blog,
+        categorySlug: blog.categorySlug || "puf-panels",
         published: !blog.published,
       });
 
@@ -469,6 +488,9 @@ export default function Blogs() {
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">
                     Category
                   </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">
+                    URL Category
+                  </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">
                     Author
                   </th>
@@ -525,7 +547,7 @@ export default function Blogs() {
                         {blog.title}
                       </p>
                       <p className="text-xs text-gray-400 mt-0.5">
-                        /{blog.slug}
+                        /{blog.categorySlug || "puf-panels"}/{blog.slug}
                       </p>
                     </td>
 
@@ -536,6 +558,12 @@ export default function Blogs() {
                         )}`}
                       >
                         {blog.category || "General"}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-3 hidden lg:table-cell">
+                      <span className="text-xs text-gray-500 font-mono">
+                        /{blog.categorySlug || "puf-panels"}/
                       </span>
                     </td>
 
@@ -777,6 +805,31 @@ export default function Blogs() {
                   </div>
                 </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    URL Category
+                  </label>
+
+                  <select
+                    name="categorySlug"
+                    value={form.categorySlug}
+                    onChange={handleChange}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {URL_CATEGORIES.map((item) => (
+                      <option key={item.value} value={item.value}>
+                        {item.label} — /{item.value}/
+                      </option>
+                    ))}
+                  </select>
+
+                  <p className="text-xs text-gray-400 mt-1">
+                    Final URL: arasfirma.com/
+                    {form.categorySlug || "puf-panels"}/
+                    {form.slug || "blog-slug"}
+                  </p>
+                </div>
+
                 <div className="space-y-1">
                   <label className="block text-sm font-medium text-gray-700">
                     Content <span className="text-red-500">*</span>
@@ -853,7 +906,8 @@ export default function Blogs() {
                     <div className="bg-white border border-gray-100 rounded-lg p-3">
                       <p className="text-xs text-gray-400 mb-2">Preview</p>
                       <p className="text-xs text-green-700">
-                        arasfirma.com › {form.slug || "blog-slug"}
+                        arasfirma.com › {form.categorySlug || "puf-panels"} ›{" "}
+                        {form.slug || "blog-slug"}
                       </p>
                       <p className="text-base text-blue-600 font-medium leading-snug mt-0.5 line-clamp-1">
                         {form.metaTitle || form.title || "Page Title"}

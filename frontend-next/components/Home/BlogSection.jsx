@@ -8,7 +8,6 @@ const API_BASE_URL = `${
 }/api`;
 
 // This function uses the existing backend API.
-// Backend code change panna vendam.
 async function fetchBlogs({ published = true, page = 1, limit = 3 }) {
   const res = await fetch(
     `${API_BASE_URL}/blogs?published=${published}&page=${page}&limit=${limit}`
@@ -26,7 +25,6 @@ async function fetchBlogs({ published = true, page = 1, limit = 3 }) {
 }
 
 // This keeps only published blogs.
-// Backend-la published/status field different-a irundha adjust panna mudiyum.
 function isPublishedBlog(blog) {
   return blog?.published === true || blog?.status === "published";
 }
@@ -75,11 +73,13 @@ const BlogSection = () => {
     return decoded.substring(0, 120);
   };
 
-  const goToBlogDetails = (slug) => {
-    if (!slug) return;
+  const goToBlogDetails = (blog) => {
+    if (!blog?.slug) return;
 
-    // Arasfirma SEO blog route.
-    router.push(`/puf-panels/${slug}`);
+    const categorySlug = blog.categorySlug || "puf-panels";
+
+    // Use saved URL category from backend instead of hardcoded /categorySlug/.
+    router.push(`/${categorySlug}/${blog.slug}`);
   };
 
   return (
@@ -117,6 +117,7 @@ const BlogSection = () => {
                 className="bg-white rounded-2xl overflow-hidden border border-gray-100 animate-pulse"
               >
                 <div className="h-48 bg-gray-200" />
+
                 <div className="p-5">
                   <div className="h-3 bg-gray-200 rounded w-24 mb-3" />
                   <div className="h-4 bg-gray-200 rounded mb-2" />
@@ -137,7 +138,7 @@ const BlogSection = () => {
               <div
                 key={blog._id || blog.slug}
                 className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group"
-                onClick={() => goToBlogDetails(blog.slug)}
+                onClick={() => goToBlogDetails(blog)}
               >
                 {/* Image */}
                 <div className="h-48 bg-gray-200 overflow-hidden">
@@ -182,7 +183,7 @@ const BlogSection = () => {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      goToBlogDetails(blog.slug);
+                      goToBlogDetails(blog);
                     }}
                     className="bg-red-500 text-white text-xs font-bold px-5 py-2.5 rounded-full hover:bg-red-600 active:scale-95 transition-all duration-200"
                   >

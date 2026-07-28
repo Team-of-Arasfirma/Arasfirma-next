@@ -64,13 +64,32 @@ const createBlogExcerpt = (blog) => {
 // GET ALL BLOGS
 export const getBlogs = async (req, res) => {
   try {
-    const { published, search, category, page = 1, limit = 10 } = req.query;
+    const {
+      published,
+      search,
+      category,
+      categorySlug,
+      page = 1,
+      limit = 10,
+    } = req.query;
 
     const query = {};
 
-    if (published !== undefined) query.published = published === "true";
-    if (search) query.title = { $regex: search, $options: "i" };
-    if (category && category !== "All") query.category = category;
+    if (published !== undefined) {
+      query.published = published === "true";
+    }
+
+    if (search) {
+      query.title = { $regex: search, $options: "i" };
+    }
+
+    if (category && category !== "All") {
+      query.category = category;
+    }
+
+    if (categorySlug && categorySlug !== "All") {
+      query.categorySlug = categorySlug;
+    }
 
     const skip = (Number(page) - 1) * Number(limit);
 
@@ -87,9 +106,15 @@ export const getBlogs = async (req, res) => {
       _id: blog._id,
       title: blog.title,
       slug: blog.slug,
+
+      // This is needed for admin edit form.
+      // Without this, saved content will not show when editing a blog.
+      content: blog.content,
+
       image: blog.image,
       author: blog.author,
       category: blog.category,
+      categorySlug: blog.categorySlug || "puf-panels",
       published: blog.published,
       publishDate: blog.publishDate,
       createdAt: blog.createdAt,
@@ -118,7 +143,9 @@ export const getBlogs = async (req, res) => {
 // GET SINGLE BLOG BY SLUG
 export const getSingleBlog = async (req, res) => {
   try {
-    const blog = await Blog.findOne({ slug: req.params.slug });
+    const slug = req.params.slug;
+
+    const blog = await Blog.findOne({ slug });
 
     if (!blog) {
       return res.status(404).json({
@@ -145,6 +172,7 @@ export const createBlog = async (req, res) => {
       imageUrl,
       author,
       category,
+      categorySlug,
       published,
       metaTitle,
       metaDescription,
@@ -177,6 +205,7 @@ export const createBlog = async (req, res) => {
       image: cloudinaryImageUrl,
       author: author || "Admin",
       category: category || "General",
+      categorySlug: categorySlug || "puf-panels",
       published: published || false,
       metaTitle: metaTitle || "",
       metaDescription: metaDescription || "",
@@ -200,6 +229,7 @@ export const updateBlog = async (req, res) => {
       imageUrl,
       author,
       category,
+      categorySlug,
       published,
       metaTitle,
       metaDescription,
@@ -238,6 +268,7 @@ export const updateBlog = async (req, res) => {
         image: cloudinaryImageUrl ?? blog.image,
         author: author ?? blog.author,
         category: category ?? blog.category,
+        categorySlug: categorySlug ?? blog.categorySlug ?? "puf-panels",
         published: published !== undefined ? published : blog.published,
         metaTitle: metaTitle !== undefined ? metaTitle : blog.metaTitle,
         metaDescription:

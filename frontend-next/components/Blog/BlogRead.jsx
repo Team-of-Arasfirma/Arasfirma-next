@@ -436,7 +436,7 @@ export default function BlogRead({ slug, initialBlog = null }) {
                     {latest.map((item) => (
                       <Link
                         key={item._id}
-                        href={`/puf-panels/${item.slug}/`}
+                        href={`/${item.categorySlug || "puf-panels"}/${item.slug}`}
                         className="flex gap-3 group"
                       >
                         {item.image ? (

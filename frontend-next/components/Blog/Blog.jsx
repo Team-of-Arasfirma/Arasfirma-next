@@ -19,6 +19,13 @@ const CATEGORIES = [
   "Agriculture",
 ];
 
+const getBlogUrl = (blog) => {
+  const categorySlug = blog?.categorySlug || "puf-panels";
+  const slug = blog?.slug || "";
+
+  return `/${categorySlug}/${slug}`;
+};
+
 const badgeStyle = (category) => {
   const map = {
     Roofing: { bg: "bg-red-500", text: "Roofing" },
@@ -119,8 +126,6 @@ export default function Blog({
     let isActive = true;
 
     const loadBlogs = async () => {
-      // First page without filter already came from server.
-      // So we avoid showing skeleton in initial HTML.
       const shouldUseServerBlogs =
         page === 1 &&
         search.trim() === "" &&
@@ -160,7 +165,7 @@ export default function Blog({
           const matchesCategory =
             activeCategory === "All" ||
             normalizeCategory(blog.category) ===
-            normalizeCategory(activeCategory);
+              normalizeCategory(activeCategory);
 
           return matchesSearch && matchesCategory;
         });
@@ -248,7 +253,9 @@ export default function Blog({
               <p className="text-3xl font-extrabold text-red-500">
                 {loading ? "—" : `${totalArticles}+`}
               </p>
-              <p className="text-sm text-gray-400 mt-0.5">Articles Published</p>
+              <p className="text-sm text-gray-400 mt-0.5">
+                Articles Published
+              </p>
             </div>
 
             <div>
@@ -276,10 +283,11 @@ export default function Blog({
               key={cat}
               type="button"
               onClick={() => handleCategory(cat)}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${activeCategory === cat
+              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
+                activeCategory === cat
                   ? "bg-red-500 text-white shadow-md"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
+              }`}
             >
               {cat}
             </button>
@@ -363,7 +371,7 @@ export default function Blog({
                   return (
                     <Link
                       key={blog._id || blog.slug}
-                      href={`/puf-panels/${blog.slug}`}
+                      href={getBlogUrl(blog)}
                       className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100"
                     >
                       <div className="relative w-full h-56 overflow-hidden bg-gray-100">
@@ -423,13 +431,13 @@ export default function Blog({
 
                           {blog.createdAt
                             ? new Date(blog.createdAt).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "long",
-                                day: "numeric",
-                                year: "numeric",
-                              },
-                            )
+                                "en-US",
+                                {
+                                  month: "long",
+                                  day: "numeric",
+                                  year: "numeric",
+                                },
+                              )
                             : ""}
                         </div>
 
@@ -481,10 +489,11 @@ export default function Blog({
                     key={i}
                     type="button"
                     onClick={() => setPage(i + 1)}
-                    className={`w-9 h-9 rounded-full text-sm font-semibold transition-colors ${page === i + 1
+                    className={`w-9 h-9 rounded-full text-sm font-semibold transition-colors ${
+                      page === i + 1
                         ? "bg-red-500 text-white"
                         : "border border-gray-200 text-gray-600 hover:border-red-400 hover:text-red-500"
-                      }`}
+                    }`}
                   >
                     {i + 1}
                   </button>

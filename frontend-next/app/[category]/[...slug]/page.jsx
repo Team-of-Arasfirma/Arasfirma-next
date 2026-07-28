@@ -1,8 +1,16 @@
-﻿import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import BlogRead from "@/components/Blog/BlogRead";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+const SITE_URL = "https://www.arasfirma.com";
+
+const ALLOWED_CATEGORIES = [
+  "puf-panels",
+  "puf-panel-roof",
+  "puf-panel-wall",
+];
 
 const getApiBase = () => API_BASE_URL.replace(/\/$/, "");
 
@@ -11,6 +19,14 @@ const stripHtml = (value = "") =>
     .replace(/<[^>]*>/g, "")
     .replace(/\s+/g, " ")
     .trim();
+
+const buildSlugPath = (slugParam) => {
+  if (Array.isArray(slugParam)) {
+    return slugParam.join("/");
+  }
+
+  return slugParam || "";
+};
 
 const fetchRedirectByPath = async (fromPath) => {
   try {
@@ -41,9 +57,12 @@ const fetchRedirectByPath = async (fromPath) => {
 
 const fetchBlogBySlug = async (slug) => {
   try {
-    const res = await fetch(`${getApiBase()}/api/blogs/${slug}`, {
-      cache: "no-store",
-    });
+    const res = await fetch(
+      `${getApiBase()}/api/blogs/${encodeURIComponent(slug)}`,
+      {
+        cache: "no-store",
+      }
+    );
 
     if (!res.ok) {
       return null;
@@ -63,11 +82,19 @@ const fetchBlogBySlug = async (slug) => {
 };
 
 export async function generateMetadata({ params }) {
-  const { slug } = await params;
+  const { category, slug } = await params;
 
-  const url = `https://www.arasfirma.com/puf-panels/${slug}/`;
+  if (!ALLOWED_CATEGORIES.includes(category)) {
+    return {
+      title: "Blog",
+      description: "Arasfirma blog article.",
+    };
+  }
 
-  const blog = await fetchBlogBySlug(slug);
+  const slugPath = buildSlugPath(slug);
+  const url = `${SITE_URL}/${category}/${slugPath}`;
+
+  const blog = await fetchBlogBySlug(slugPath);
 
   if (!blog) {
     return {
@@ -105,19 +132,26 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Page({ params }) {
-  const { slug } = await params;
+  const { category, slug } = await params;
 
-  const fromPath = `/puf-panels/${slug}`;
+  if (!ALLOWED_CATEGORIES.includes(category)) {
+    notFound();
+  }
 
-  // Redirect check first.
-  // This allows redirect to work even if the old slug still exists as a blog.
+  const slugPath = buildSlugPath(slug);
+  const fromPath = `/${category}/${slugPath}`;
+
   const redirectEntry = await fetchRedirectByPath(fromPath);
 
   if (redirectEntry?.to) {
     redirect(redirectEntry.to);
   }
 
-  const blog = await fetchBlogBySlug(slug);
+  const blog = await fetchBlogBySlug(slugPath);
 
-  return <BlogRead slug={slug} initialBlog={blog} />;
+  if (!blog) {
+    notFound();
+  }
+
+  return <BlogRead slug={slugPath} initialBlog={blog} />;
 }
