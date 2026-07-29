@@ -28,6 +28,14 @@ const products = [
     badge: null,
     link: "/products/mono-wall",
   },
+  {
+    name: "Cold Storage PUF Panel",
+    core: "Core: High Density PUF Insulation",
+    image: "/assets/products/Roof-panel.png",
+    color: "#ecfeff",
+    badge: "Cold Room",
+    link: "/cold-storage",
+  },
 ];
 
 const ProductCard = ({ product, index }) => {
@@ -52,7 +60,7 @@ const ProductCard = ({ product, index }) => {
           observer.disconnect();
         }
       },
-      { threshold: 0.15 },
+      { threshold: 0.15 }
     );
 
     observer.observe(card);
@@ -188,7 +196,7 @@ const ProductRange = () => {
           observer.disconnect();
         }
       },
-      { threshold: 0.2 },
+      { threshold: 0.2 }
     );
 
     observer.observe(el);
@@ -209,13 +217,14 @@ const ProductRange = () => {
           </h2>
 
           <p className="text-sm text-gray-500 mt-4 max-w-3xl leading-relaxed">
-            As A Trusted Sandwich PUF Panel Manufacturer, We Offer Both PUF
-            Panel For Roof And PUF Panel For Wall Solutions Designed To Meet
-            Your Building&apos;s Energy Efficiency And Structural Needs.
+            As A Trusted Sandwich PUF Panel Manufacturer, We Offer PUF Panel For
+            Roof, PUF Panel For Wall, Concealed Panel And Cold Storage PUF Panel
+            Solutions Designed To Meet Your Building&apos;s Energy Efficiency
+            And Structural Needs.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product, index) => (
             <ProductCard key={product.name} product={product} index={index} />
           ))}

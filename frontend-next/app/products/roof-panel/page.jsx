@@ -1,15 +1,18 @@
 import RoofPanel from "@/components/RoofPanel";
 
 export const metadata = {
-  title: "Best PUF Roofing Sheets | Durable & Energy-Efficient Roofs",
-  description: "Get high-quality PUF roofing sheets for industries and homes.",
-  alternates: { canonical: "https://www.arasfirma.com/products/roof-panel/" },
+  title: "PUF Panel Roof | PUF Roofing Sheets & Sandwich Panel Roof",
+  description:
+    "Explore high-performance PUF panel roof systems, PUF roofing sheets and sandwich panel roof solutions for industrial, commercial, cold storage and residential projects in India.",
+  alternates: {
+    canonical: "https://www.arasfirma.com/products/roof-panel",
+  },
   openGraph: {
-    title: "Best PUF Roofing Sheets | Durable & Energy-Efficient Roofs",
+    title: "PUF Panel Roof | PUF Roofing Sheets & Sandwich Panel Roof",
     description:
-      "Get high-quality PUF roofing sheets for industries and homes.",
+      "Explore high-performance PUF panel roof systems, PUF roofing sheets and sandwich panel roof solutions for industrial, commercial, cold storage and residential projects in India.",
     type: "website",
-    url: "https://www.arasfirma.com/products/roof-panel/",
+    url: "https://www.arasfirma.com/products/roof-panel",
   },
 };
 

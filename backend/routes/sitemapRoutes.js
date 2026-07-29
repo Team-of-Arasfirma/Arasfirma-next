@@ -29,6 +29,7 @@ router.get("/sitemap.xml", async (req, res) => {
       "roof-panel",
       "mono-wall",
       "concealed",
+      "cold-storage",
     ];
 
     const blogs = await Blog.find(

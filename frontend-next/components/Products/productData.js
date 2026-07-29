@@ -6,7 +6,7 @@ export const PRODUCTS = {
 
     name: "Roof Panel",
 
-    tagline: "Premium Insulated Roofing Solution",
+    tagline: "PUF Panel Roof High-Performance Roofing Solutions for Modern Construction",
 
     badge: "Best Seller",
 
@@ -54,8 +54,11 @@ export const PRODUCTS = {
       },
     ],
 
-    description: `Arasfirma Roof PUF Panels are high-performance insulated sandwich panels designed for industrial, commercial, and cold storage roofing applications.Engineered with a rigid polyurethane foam core between two profiled steel sheets, they deliver exceptional thermal insulation, structural strength,and weather resistance. Ideal for factories, warehouses, cold storage units,
-and commercial buildings across India.`,
+    description: `High-quality roofing begins with materials that deliver strength,
+    insulation and long-term value. Today, PUF panel roof systems have become a preferred choice for industrial,
+    commercial and residential projects due to their exceptional durability, thermal performance and ease of installation. 
+    Whether you require a sandwich panel roof, PUF panel roof sheet, or PUF sheet roofing, these systems offer efficiency, 
+    reliability and cost-effective performance for Indian climatic conditions.`,
 
     specifications: [
       { label: "Panel Width", value: "1000 mm" },
@@ -83,41 +86,39 @@ and commercial buildings across India.`,
     // ✅ icon = path to YOUR image file in /public/icons/
 
     keyPerformance: [
-      {
-        icon: "/assets/icon/thermal.svg",
-        title: "Thermal Insulation",
-        desc: "Exceptional U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
+      {        
+        title: "Long Life & Low Maintenance",
+        desc: "These panels are crafted from high-quality coated steel and aluminium, with advanced insulation cores, ensuring they remain corrosion-resistant and structurally stable for years U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
-
-      {
-        icon: "/assets/icon/fireIcon.svg",
-        title: "Fire Retardant",
-        desc: "B1 & B2 fire-rated panels with flame retardant PUF core for maximum safety.",
+      {        
+        title: "Superior Thermal Insulation",
+        desc: "With a thermal conductivity (K-value) of 0.020 W/mK, PUF panels deliver outstanding insulation that helps maintain stable indoor temperatures. It reduces cooling or heating requirements, making them ideal for cold storage, warehouses, food processing units and temperature-sensitive facilities. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
-
-      {
-        icon: "/assets/icon/water.svg",
-        title: "Water Resistant",
-        desc: "Sealed joints and coated steel prevent water ingress and corrosion.",
+      {        
+        title: "High Load-Carrying & Water-Carrying Capacity",
+        desc: "The deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
-
-      {
-        icon: "/assets/icon/energy.svg",
-        title: "Energy Efficient",
-        desc: "Reduces HVAC load by up to 40% — significant energy and cost savings.",
+      {        
+        title: "Eco-Friendly Production",
+        desc: "The insulation core uses CFC/HCFC-free chemicals and an N-pentane blowing agent, ensuring zero ozone depletion.  deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
-
-      {
-        icon: "/assets/icon/strength.svg",
-        title: "Roof Slope Compatibility",
-        desc: " Designed to perform efficiently across varying roof slopes.",
+      {        
+        title: "Excellent Fire Resistance",
+        desc: "PUF and PIR variants offer improved fire performance, with mineral wool options available for enhanced resistance where required. It improves safety in commercial, industrial, and institutional applications. insulation core uses CFC/HCFC-free chemicals and an N-pentane blowing agent, ensuring zero ozone depletion.  deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
-
-      {
-        icon: "/assets/icon/installation.svg",
-        title: "Easy Installation",
-        desc: "Interlocking joint system for fast and precise site installation.",
+      {        
+        title: "Perfect Water & Vapour Barrier",
+        desc: "The panels are designed as self-sufficient units, preventing moisture ingress and vapour leakage. and PIR variants offer improved fire performance, with mineral wool options available for enhanced resistance where required. It improves safety in commercial, industrial, and institutional applications. insulation core uses CFC/HCFC-free chemicals and an N-pentane blowing agent, ensuring zero ozone depletion.  deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
+      {        
+        title: "Fast, Hassle-Free Installation",
+        desc: "Their lightweight yet sturdy structure allows for rapid installation with minimal labour. It reduces project timelines and ensures the roofing system is operational more quickly than with conventional systems.PUF and PIR variants offer improved fire performance, with mineral wool options available for enhanced resistance where required. It improves safety in commercial, industrial, and institutional applications. insulation core uses CFC/HCFC-free chemicals and an N-pentane blowing agent, ensuring zero ozone depletion.  deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
+      },
+      {        
+        title: "Aesthetic Appeal & Custom Colour Options",
+        desc: "More than 45 colour variants are available for large-scale orders, enabling architects and project planners to align roofing elements with the building's theme or brand identity. lightweight yet sturdy structure allows for rapid installation with minimal labour. It reduces project timelines and ensures the roofing system is operational more quickly than with conventional systems.PUF and PIR variants offer improved fire performance, with mineral wool options available for enhanced resistance where required. It improves safety in commercial, industrial, and institutional applications. insulation core uses CFC/HCFC-free chemicals and an N-pentane blowing agent, ensuring zero ozone depletion.  deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
+      },
+      
     ],
 
     joints: [
@@ -140,29 +141,62 @@ and commercial buildings across India.`,
       },
     ],
 
-    accessories: [
-      { name: "Profile Ridge", image: "/assets/accessories/ProfileRidge.png" },
+    accessories:
+    [
+  {
+    name: "Profile Ridge",
+    image: "/assets/accessories/ProfileRidge.png",
+    desc: "Installed at the highest point of the roof to seal joints and prevent water entry. It provides a clean, symmetrical finish across pitched roof structures.",
+  },
 
-      { name: "C-Flashing", image: "/assets/accessories/CFlashing.png" },
+  {
+    name: "Plain Ridge",
+    image: "/assets/accessories/PlainRidge.png",
+    desc: "Ideal for simpler roof designs that require minimal detailing. It provides adequate protection while maintaining streamlined aesthetics.",
+  },
 
-      {
-        name: "Z-AngleFlashing",
-        image: "/assets/accessories/ZAngleFlashing.png",
-      },
+  {
+    name: "C-Flashing",
+    image: "/assets/accessories/CFlashing.png",
+    desc: "Covers the panel edges where sections meet, creating a smooth, sealed interface. It strengthens structural connections and prevents moisture buildup.",
+  },
 
-      { name: "Gutter", image: "/assets/accessories/Gutter.png" },
+  {
+    name: "L-Flashing",
+    image: "/assets/accessories/LFlashing.png",
+    desc: "Commonly used along eaves, edges or transitions requiring directional water runoff. It improves drip management and reduces the risk of leakage.",
+  },
 
-      { name: "L-Flashing", image: "/assets/accessories/LFlashing.png" },
+  {
+    name: "Z-Angle Flashing",
+    image: "/assets/accessories/ZAngleFlashing.png",
+    desc: "Supports panel alignment where differing levels meet. It enhances rigidity and maintains uniformity in the roofing layout.",
+  },
 
-      { name: "Plain Ridge", image: "/assets/accessories/PlainRidge.png" },
+  {
+    name: "Gutter System",
+    image: "/assets/accessories/Gutter.png",
+    desc: "Collects and channels rainwater safely away from buildings to prevent erosion and water damage. Essential for large roof spans and areas with heavy rainfall.",
+  },
 
-      { name: "Metal closer", image: "/assets/accessories/Metalcloser.png" },
+  {
+    name: "Screws & Screw Caps",
+    image: "/assets/accessories/Screw&ScrewCaps.png",
+    desc: "These ensure firm panel fastening while preventing water seepage through fixing points. Caps match the panel colour for a seamless finish.",
+  },
 
-      {
-        name: "Screw & Screw Caps",
-        image: "/assets/accessories/Screw&ScrewCaps.png",
-      },
-    ],
+  {
+    name: "Ventilator Fan",
+    image: "/assets/accessories/VentilatorFan.png",
+    desc: "Improves internal ventilation by expelling hot air and fumes. Especially beneficial in industrial sheds where airflow and temperature control are essential.",
+  },
+
+  {
+    name: "Metal Closer",
+    image: "/assets/accessories/Metalcloser.png",
+    desc: "Used to close gaps between roofing sheets and structural joints, improving sealing, alignment and protection against dust, wind and water entry.",
+  },
+  ],
 
     faqs: [
       {
@@ -284,42 +318,40 @@ and commercial buildings across India.`,
 
     // ✅ icon = path to YOUR image file in /public/icons/
 
-    keyPerformance: [
-      {
-        icon: "/assets/icon/thermal.svg",
-        title: "Thermal Insulation",
-        desc: "High-performance insulation reduces heat transfer and maintains consistent indoor temperatures.",
+        keyPerformance: [
+      {        
+        title: "Long Life & Low Maintenance",
+        desc: "These panels are crafted from high-quality coated steel and aluminium, with advanced insulation cores, ensuring they remain corrosion-resistant and structurally stable for years U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
-
-      {
-        icon: "/assets/icon/sound.svg",
-        title: "Sound Insulation",
-        desc: "PUF core significantly reduces external noise — ideal for factories and commercial spaces.",
+      {        
+        title: "Superior Thermal Insulation",
+        desc: "With a thermal conductivity (K-value) of 0.020 W/mK, PUF panels deliver outstanding insulation that helps maintain stable indoor temperatures. It reduces cooling or heating requirements, making them ideal for cold storage, warehouses, food processing units and temperature-sensitive facilities. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
-
-      {
-        icon: "/assets/icon/aesthetic.svg",
-        title: "Aesthetic Finish",
-        desc: "Clean, smooth wall finish available in multiple RAL colors for modern architecture.",
+      {        
+        title: "High Load-Carrying & Water-Carrying Capacity",
+        desc: "The deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
-
-      {
-        icon: "/assets/icon/energy.svg",
-        title: "Energy Efficient",
-        desc: "Reduces HVAC energy consumption by maintaining stable internal temperatures.",
+      {        
+        title: "Eco-Friendly Production",
+        desc: "The insulation core uses CFC/HCFC-free chemicals and an N-pentane blowing agent, ensuring zero ozone depletion.  deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
-
-      {
-        icon: "/assets/icon/ShieldCheck.svg",
-        title: "Secure & Durable",
-        desc: "Rigid panel system with strong interlocking joints for long-term structural security.",
+      {        
+        title: "Excellent Fire Resistance",
+        desc: "PUF and PIR variants offer improved fire performance, with mineral wool options available for enhanced resistance where required. It improves safety in commercial, industrial, and institutional applications. insulation core uses CFC/HCFC-free chemicals and an N-pentane blowing agent, ensuring zero ozone depletion.  deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
-
-      {
-        icon: "/assets/icon/installation.svg",
-        title: "Fast Installation",
-        desc: "Lightweight panels with simple tongue & groove joints for quick site assembly.",
+      {        
+        title: "Perfect Water & Vapour Barrier",
+        desc: "The panels are designed as self-sufficient units, preventing moisture ingress and vapour leakage. and PIR variants offer improved fire performance, with mineral wool options available for enhanced resistance where required. It improves safety in commercial, industrial, and institutional applications. insulation core uses CFC/HCFC-free chemicals and an N-pentane blowing agent, ensuring zero ozone depletion.  deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
+      {        
+        title: "Fast, Hassle-Free Installation",
+        desc: "Their lightweight yet sturdy structure allows for rapid installation with minimal labour. It reduces project timelines and ensures the roofing system is operational more quickly than with conventional systems.PUF and PIR variants offer improved fire performance, with mineral wool options available for enhanced resistance where required. It improves safety in commercial, industrial, and institutional applications. insulation core uses CFC/HCFC-free chemicals and an N-pentane blowing agent, ensuring zero ozone depletion.  deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
+      },
+      {        
+        title: "Aesthetic Appeal & Custom Colour Options",
+        desc: "More than 45 colour variants are available for large-scale orders, enabling architects and project planners to align roofing elements with the building's theme or brand identity. lightweight yet sturdy structure allows for rapid installation with minimal labour. It reduces project timelines and ensures the roofing system is operational more quickly than with conventional systems.PUF and PIR variants offer improved fire performance, with mineral wool options available for enhanced resistance where required. It improves safety in commercial, industrial, and institutional applications. insulation core uses CFC/HCFC-free chemicals and an N-pentane blowing agent, ensuring zero ozone depletion.  deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
+      },
+      
     ],
 
     joints: [
@@ -342,29 +374,62 @@ and commercial buildings across India.`,
       },
     ],
 
-    accessories: [
-      { name: "Profile Ridge", image: "/assets/accessories/ProfileRidge.png" },
+        accessories:
+    [
+  {
+    name: "Profile Ridge",
+    image: "/assets/accessories/ProfileRidge.png",
+    desc: "Installed at the highest point of the roof to seal joints and prevent water entry. It provides a clean, symmetrical finish across pitched roof structures.",
+  },
 
-      { name: "C-Flashing", image: "/assets/accessories/CFlashing.png" },
+  {
+    name: "Plain Ridge",
+    image: "/assets/accessories/PlainRidge.png",
+    desc: "Ideal for simpler roof designs that require minimal detailing. It provides adequate protection while maintaining streamlined aesthetics.",
+  },
 
-      {
-        name: "Z-AngleFlashing",
-        image: "/assets/accessories/ZAngleFlashing.png",
-      },
+  {
+    name: "C-Flashing",
+    image: "/assets/accessories/CFlashing.png",
+    desc: "Covers the panel edges where sections meet, creating a smooth, sealed interface. It strengthens structural connections and prevents moisture buildup.",
+  },
 
-      { name: "Gutter", image: "/assets/accessories/Gutter.png" },
+  {
+    name: "L-Flashing",
+    image: "/assets/accessories/LFlashing.png",
+    desc: "Commonly used along eaves, edges or transitions requiring directional water runoff. It improves drip management and reduces the risk of leakage.",
+  },
 
-      { name: "L-Flashing", image: "/assets/accessories/LFlashing.png" },
+  {
+    name: "Z-Angle Flashing",
+    image: "/assets/accessories/ZAngleFlashing.png",
+    desc: "Supports panel alignment where differing levels meet. It enhances rigidity and maintains uniformity in the roofing layout.",
+  },
 
-      { name: "Plain Ridge", image: "/assets/accessories/PlainRidge.png" },
+  {
+    name: "Gutter System",
+    image: "/assets/accessories/Gutter.png",
+    desc: "Collects and channels rainwater safely away from buildings to prevent erosion and water damage. Essential for large roof spans and areas with heavy rainfall.",
+  },
 
-      { name: "Metal closer", image: "/assets/accessories/Metalcloser.png" },
+  {
+    name: "Screws & Screw Caps",
+    image: "/assets/accessories/Screw&ScrewCaps.png",
+    desc: "These ensure firm panel fastening while preventing water seepage through fixing points. Caps match the panel colour for a seamless finish.",
+  },
 
-      {
-        name: "Screw & Screw Caps",
-        image: "/assets/accessories/Screw&ScrewCaps.png",
-      },
-    ],
+  {
+    name: "Ventilator Fan",
+    image: "/assets/accessories/VentilatorFan.png",
+    desc: "Improves internal ventilation by expelling hot air and fumes. Especially beneficial in industrial sheds where airflow and temperature control are essential.",
+  },
+
+  {
+    name: "Metal Closer",
+    image: "/assets/accessories/Metalcloser.png",
+    desc: "Used to close gaps between roofing sheets and structural joints, improving sealing, alignment and protection against dust, wind and water entry.",
+  },
+  ],
 
     faqs: [
       {
@@ -482,42 +547,40 @@ and commercial buildings across India.`,
 
     // ✅ icon = path to YOUR image file in /public/icons/
 
-    keyPerformance: [
-      {
-        icon: "/assets/icon/aestheticc.svg",
-        title: "Premium Aesthetics",
-        desc: "Completely concealed fasteners give a clean, uninterrupted wall surface for high-end finishes.",
+        keyPerformance: [
+      {        
+        title: "Long Life & Low Maintenance",
+        desc: "These panels are crafted from high-quality coated steel and aluminium, with advanced insulation cores, ensuring they remain corrosion-resistant and structurally stable for years U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
-
-      {
-        icon: "/assets/icon/hygiene.svg",
-        title: "Hygienic Surface",
-        desc: "No exposed fasteners means easy cleaning — ideal for food, pharma, and clean room environments.",
+      {        
+        title: "Superior Thermal Insulation",
+        desc: "With a thermal conductivity (K-value) of 0.020 W/mK, PUF panels deliver outstanding insulation that helps maintain stable indoor temperatures. It reduces cooling or heating requirements, making them ideal for cold storage, warehouses, food processing units and temperature-sensitive facilities. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
-
-      {
-        icon: "/assets/icon/puf.svg",
-        title: "Superior Insulation",
-        desc: "Higher density PUF core provides exceptional thermal performance for controlled environments.",
+      {        
+        title: "High Load-Carrying & Water-Carrying Capacity",
+        desc: "The deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
-
-      {
-        icon: "/assets/icon/Watertight.svg",
-        title: "Watertight System",
-        desc: "Concealed joints prevent moisture ingress, eliminating corrosion and leakage risks.",
+      {        
+        title: "Eco-Friendly Production",
+        desc: "The insulation core uses CFC/HCFC-free chemicals and an N-pentane blowing agent, ensuring zero ozone depletion.  deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
-
-      {
-        icon: "/assets/icon/sound.svg",
-        title: "Acoustic Control",
-        desc: "Enhanced sound attenuation for noise-sensitive pharmaceutical and laboratory facilities.",
+      {        
+        title: "Excellent Fire Resistance",
+        desc: "PUF and PIR variants offer improved fire performance, with mineral wool options available for enhanced resistance where required. It improves safety in commercial, industrial, and institutional applications. insulation core uses CFC/HCFC-free chemicals and an N-pentane blowing agent, ensuring zero ozone depletion.  deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
-
-      {
-        icon: "/assets/icon/quality.svg",
-        title: "Premium Quality",
-        desc: "Higher grade steel and PUF density for demanding commercial and industrial applications.",
+      {        
+        title: "Perfect Water & Vapour Barrier",
+        desc: "The panels are designed as self-sufficient units, preventing moisture ingress and vapour leakage. and PIR variants offer improved fire performance, with mineral wool options available for enhanced resistance where required. It improves safety in commercial, industrial, and institutional applications. insulation core uses CFC/HCFC-free chemicals and an N-pentane blowing agent, ensuring zero ozone depletion.  deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
       },
+      {        
+        title: "Fast, Hassle-Free Installation",
+        desc: "Their lightweight yet sturdy structure allows for rapid installation with minimal labour. It reduces project timelines and ensures the roofing system is operational more quickly than with conventional systems.PUF and PIR variants offer improved fire performance, with mineral wool options available for enhanced resistance where required. It improves safety in commercial, industrial, and institutional applications. insulation core uses CFC/HCFC-free chemicals and an N-pentane blowing agent, ensuring zero ozone depletion.  deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
+      },
+      {        
+        title: "Aesthetic Appeal & Custom Colour Options",
+        desc: "More than 45 colour variants are available for large-scale orders, enabling architects and project planners to align roofing elements with the building's theme or brand identity. lightweight yet sturdy structure allows for rapid installation with minimal labour. It reduces project timelines and ensures the roofing system is operational more quickly than with conventional systems.PUF and PIR variants offer improved fire performance, with mineral wool options available for enhanced resistance where required. It improves safety in commercial, industrial, and institutional applications. insulation core uses CFC/HCFC-free chemicals and an N-pentane blowing agent, ensuring zero ozone depletion.  deep rib design and symmetrical crest spacing allow the panels to withstand heavy rainfall, strong winds and significant mechanical loads. It makes puf panel roof sheets suitable for large-span industrial structures and regions prone to monsoons. U-value as low as 0.2 W/m²K — reduces cooling and heating costs significantly.",
+      },
+      
     ],
 
     joints: [
@@ -540,29 +603,62 @@ and commercial buildings across India.`,
       },
     ],
 
-    accessories: [
-      { name: "Profile Ridge", image: "/assets/accessories/ProfileRidge.png" },
+        accessories:
+    [
+  {
+    name: "Profile Ridge",
+    image: "/assets/accessories/ProfileRidge.png",
+    desc: "Installed at the highest point of the roof to seal joints and prevent water entry. It provides a clean, symmetrical finish across pitched roof structures.",
+  },
 
-      { name: "C-Flashing", image: "/assets/accessories/CFlashing.png" },
+  {
+    name: "Plain Ridge",
+    image: "/assets/accessories/PlainRidge.png",
+    desc: "Ideal for simpler roof designs that require minimal detailing. It provides adequate protection while maintaining streamlined aesthetics.",
+  },
 
-      {
-        name: "Z-AngleFlashing",
-        image: "/assets/accessories/ZAngleFlashing.png",
-      },
+  {
+    name: "C-Flashing",
+    image: "/assets/accessories/CFlashing.png",
+    desc: "Covers the panel edges where sections meet, creating a smooth, sealed interface. It strengthens structural connections and prevents moisture buildup.",
+  },
 
-      { name: "Gutter", image: "/assets/accessories/Gutter.png" },
+  {
+    name: "L-Flashing",
+    image: "/assets/accessories/LFlashing.png",
+    desc: "Commonly used along eaves, edges or transitions requiring directional water runoff. It improves drip management and reduces the risk of leakage.",
+  },
 
-      { name: "L-Flashing", image: "/assets/accessories/LFlashing.png" },
+  {
+    name: "Z-Angle Flashing",
+    image: "/assets/accessories/ZAngleFlashing.png",
+    desc: "Supports panel alignment where differing levels meet. It enhances rigidity and maintains uniformity in the roofing layout.",
+  },
 
-      { name: "Plain Ridge", image: "/assets/accessories/PlainRidge.png" },
+  {
+    name: "Gutter System",
+    image: "/assets/accessories/Gutter.png",
+    desc: "Collects and channels rainwater safely away from buildings to prevent erosion and water damage. Essential for large roof spans and areas with heavy rainfall.",
+  },
 
-      { name: "Metal closer", image: "/assets/accessories/Metalcloser.png" },
+  {
+    name: "Screws & Screw Caps",
+    image: "/assets/accessories/Screw&ScrewCaps.png",
+    desc: "These ensure firm panel fastening while preventing water seepage through fixing points. Caps match the panel colour for a seamless finish.",
+  },
 
-      {
-        name: "Screw & Screw Caps",
-        image: "/assets/accessories/Screw&ScrewCaps.png",
-      },
-    ],
+  {
+    name: "Ventilator Fan",
+    image: "/assets/accessories/VentilatorFan.png",
+    desc: "Improves internal ventilation by expelling hot air and fumes. Especially beneficial in industrial sheds where airflow and temperature control are essential.",
+  },
+
+  {
+    name: "Metal Closer",
+    image: "/assets/accessories/Metalcloser.png",
+    desc: "Used to close gaps between roofing sheets and structural joints, improving sealing, alignment and protection against dust, wind and water entry.",
+  },
+  ],
 
     faqs: [
       {

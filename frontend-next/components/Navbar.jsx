@@ -8,6 +8,11 @@ const PRODUCTS_DROPDOWN = [
   { label: "Roof Panel", path: "/products/roof-panel", icon: "🏠" },
   { label: "Mono Wall", path: "/products/mono-wall", icon: "🧱" },
   { label: "Concealed Panel", path: "/products/concealed", icon: "✨" },
+  {
+    label: "Cold Storage PUF Panel",
+    path: "/products/cold-storage",
+    icon: "❄️",
+  },
 ];
 
 const Navbar = () => {
@@ -89,7 +94,7 @@ const Navbar = () => {
                   : "opacity-0 -translate-y-2 scale-95 invisible"
               }`}
             >
-              <div className="bg-white rounded-xl shadow-xl border border-gray-100 w-56 py-2">
+              <div className="bg-white rounded-xl shadow-xl border border-gray-100 w-64 py-2">
                 {PRODUCTS_DROPDOWN.map((p) => (
                   <Link
                     key={p.path}
@@ -139,7 +144,7 @@ const Navbar = () => {
 
       <div
         className="md:hidden bg-white border-t border-gray-100 overflow-hidden transition-all duration-300"
-        style={{ maxHeight: isOpen ? "600px" : "0" }}
+        style={{ maxHeight: isOpen ? "700px" : "0" }}
       >
         <ul className="flex flex-col px-6 py-4 gap-4">
           <li>
@@ -166,6 +171,7 @@ const Navbar = () => {
             <p className="text-xs font-bold uppercase text-gray-400 mb-2">
               Products
             </p>
+
             {PRODUCTS_DROPDOWN.map((p) => (
               <Link
                 key={p.path}
@@ -173,7 +179,8 @@ const Navbar = () => {
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-2 py-1.5 text-sm text-gray-700 hover:text-red-600"
               >
-                <span>{p.icon}</span> {p.label}
+                <span>{p.icon}</span>
+                {p.label}
               </Link>
             ))}
           </li>
