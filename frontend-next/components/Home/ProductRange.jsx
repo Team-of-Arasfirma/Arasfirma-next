@@ -34,7 +34,7 @@ const products = [
     image: "/assets/products/Roof-panel.png",
     color: "#ecfeff",
     badge: "Cold Room",
-    link: "/cold-storage",
+    link: "/products/cold-storage-for-pufpanels",
   },
 ];
 

@@ -10,7 +10,7 @@ const PRODUCTS_DROPDOWN = [
   { label: "Concealed Panel", path: "/products/concealed", icon: "✨" },
   {
     label: "Cold Storage PUF Panel",
-    path: "/products/cold-storage",
+    path: "/products/cold-storage-for-pufpanels",
     icon: "❄️",
   },
 ];

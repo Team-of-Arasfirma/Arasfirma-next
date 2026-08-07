@@ -5,7 +5,11 @@ export const metadata = {
   description:
     "Explore cold storage PUF panels for food, pharma, dairy, agriculture and temperature-controlled facilities. Durable, energy-efficient and high-insulation panels by Arasfirma.",
   alternates: {
-    canonical: "https://www.arasfirma.com/cold-storage",
+    canonical: "https://www.arasfirma.com/products/cold-storage-for-pufpanels",
+
+    openGraph: {
+  url: "https://www.arasfirma.com/products/cold-storage-for-pufpanels",
+},
   },
 };
 
