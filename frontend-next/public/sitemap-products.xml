@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.arasfirma.com/products</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.arasfirma.com/products/roof-panel</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.arasfirma.com/products/mono-wall</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.arasfirma.com/products/concealed</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.arasfirma.com/products/cold-storage-for-pufpanels</loc>
+    <priority>0.8</priority>
+  </url>
+</urlset>
