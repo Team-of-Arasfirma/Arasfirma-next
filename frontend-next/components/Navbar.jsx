@@ -25,13 +25,14 @@ const Navbar = () => {
     { label: "Home", path: "/" },
     { label: "About", path: "/about" },
     { label: "Project", path: "/projects" },
-    { label: "Blog", path: "/blog" },
+    { label: "Blog", path: "/blogs" },
     { label: "Career", path: "/career" },
     { label: "Contact", path: "/contact" },
   ];
 
   const getLinkClass = (path) => {
-    const isActive = pathname === path;
+    const isActive =
+      pathname === path || (path !== "/" && pathname.startsWith(`${path}/`));
 
     return `text-sm font-medium transition-all duration-200 ${
       isActive
@@ -39,6 +40,8 @@ const Navbar = () => {
         : "text-gray-700 hover:text-red-600"
     }`;
   };
+
+  const isProductsActive = pathname.startsWith("/products");
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
@@ -72,8 +75,8 @@ const Navbar = () => {
             <button
               type="button"
               className={`flex items-center gap-1 text-sm font-medium transition-colors ${
-                pathname.startsWith("/products")
-                  ? "text-red-600"
+                isProductsActive
+                  ? "text-red-600 font-semibold border-b-2 border-red-600 pb-0.5"
                   : "text-gray-700 hover:text-red-600"
               }`}
             >
@@ -168,7 +171,11 @@ const Navbar = () => {
           </li>
 
           <li>
-            <p className="text-xs font-bold uppercase text-gray-400 mb-2">
+            <p
+              className={`text-xs font-bold uppercase mb-2 ${
+                isProductsActive ? "text-red-600" : "text-gray-400"
+              }`}
+            >
               Products
             </p>
 
@@ -177,7 +184,11 @@ const Navbar = () => {
                 key={p.path}
                 href={p.path}
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2 py-1.5 text-sm text-gray-700 hover:text-red-600"
+                className={`flex items-center gap-2 py-1.5 text-sm ${
+                  pathname === p.path
+                    ? "text-red-600 font-semibold"
+                    : "text-gray-700 hover:text-red-600"
+                }`}
               >
                 <span>{p.icon}</span>
                 {p.label}
