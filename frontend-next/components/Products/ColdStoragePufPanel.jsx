@@ -68,10 +68,7 @@ const types = [
     title: "Roof Panels",
     text: "Roof panels are exposed to direct sunlight and external weather conditions. They are designed to provide superior insulation and protection. A good cold storage PUF panel for roofing helps prevent heat gain from the top.",
   },
-  {
-    title: "Floor Panels",
-    text: "Floor panels are built to withstand heavy loads while maintaining insulation. They are commonly used in facilities with high foot traffic or equipment movement.",
-  },
+
 ];
 
 const factors = [

@@ -137,37 +137,23 @@ const MagneticButton = ({ children, onClick, primary }) => {
     btn.style.transform = `translate(${dx}px, ${dy}px) scale(1.08)`;
   };
 
-  const resetButton = (e) => {
+  const resetButton = () => {
     const btn = btnRef.current;
-
     if (!btn) return;
-
     btn.style.transform = "translate(0px,0px) scale(1)";
-
-    if (primary) {
-      e.currentTarget.style.boxShadow = "0 4px 15px rgba(220,38,38,0.3)";
-    } else {
-      e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)";
-    }
   };
 
   return (
     <button
       ref={btnRef}
-
       onClick={onClick}
-
       onMouseMove={handleMouseMove}
-
       onMouseLeave={resetButton}
-
-      onMouseEnter={(e) => {
-        if (primary) {
-          e.currentTarget.style.boxShadow = "0 8px 30px rgba(220,38,38,0.5)";
-        } else {
-          e.currentTarget.style.boxShadow = "0 8px 20px rgba(0,0,0,0.15)";
-        }
-      }}
+      className={
+        primary
+          ? "shadow-[0_4px_15px_rgba(220,38,38,0.3)] hover:shadow-[0_8px_30px_rgba(220,38,38,0.5)]"
+          : "shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.15)]"
+      }
 
       style={{
         transition:

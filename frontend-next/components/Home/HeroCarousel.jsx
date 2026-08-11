@@ -200,24 +200,34 @@ const HeroCarousel = () => {
   };
 
   useEffect(() => {
+    let showRaf1 = 0;
+    let showRaf2 = 0;
+
     if (openModal) {
-      document.body.style.overflow = "hidden";
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() => setIsVisible(true)),
-      );
+      document.body.classList.add("qm-modal-open");
+      showRaf1 = requestAnimationFrame(() => {
+        showRaf2 = requestAnimationFrame(() => setIsVisible(true));
+      });
+
+      return () => {
+        cancelAnimationFrame(showRaf1);
+        cancelAnimationFrame(showRaf2);
+        document.body.classList.remove("qm-modal-open");
+      };
     } else {
       setIsVisible(false);
 
       const timer = setTimeout(() => {
-        document.body.style.overflow = "";
+        document.body.classList.remove("qm-modal-open");
       }, 380);
 
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        cancelAnimationFrame(showRaf1);
+        cancelAnimationFrame(showRaf2);
+        document.body.classList.remove("qm-modal-open");
+      };
     }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
   }, [openModal]);
 
   const closeModal = () => {
@@ -812,20 +822,6 @@ const HeroCarousel = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  onClick={(e) => {
-                    if (isSubmitting) return;
-
-                    const btn = e.currentTarget;
-                    const ripple = document.createElement("span");
-                    ripple.className = "rpl";
-
-                    const rect = btn.getBoundingClientRect();
-                    ripple.style.left = `${e.clientX - rect.left}px`;
-                    ripple.style.top = `${e.clientY - rect.top}px`;
-
-                    btn.appendChild(ripple);
-                    setTimeout(() => ripple.remove(), 600);
-                  }}
                   className={`qm-ripple flex-1 py-3 rounded-xl text-white font-semibold text-sm uppercase tracking-wide transition-all flex items-center justify-center gap-2 ${
                     isSubmitting
                       ? "opacity-70 cursor-not-allowed"

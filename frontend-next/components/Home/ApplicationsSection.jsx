@@ -180,24 +180,7 @@ const ApplicationsSection = () => {
               onClick={() => {
                 if (!isDrag) goToProjects();
               }}
-              onMouseEnter={(e) => {
-                const overlay = e.currentTarget.querySelector(".overlay");
-                const label = e.currentTarget.querySelector(".label");
-                const img = e.currentTarget.querySelector(".img");
-
-                if (overlay) overlay.style.opacity = "1";
-                if (label) label.style.transform = "translateY(0)";
-                if (img) img.style.transform = "scale(1.08)";
-              }}
-              onMouseLeave={(e) => {
-                const overlay = e.currentTarget.querySelector(".overlay");
-                const label = e.currentTarget.querySelector(".label");
-                const img = e.currentTarget.querySelector(".img");
-
-                if (overlay) overlay.style.opacity = "0";
-                if (label) label.style.transform = "translateY(100%)";
-                if (img) img.style.transform = "scale(1)";
-              }}
+              className="group"
               style={{
                 minWidth: CARD_WIDTH,
                 maxWidth: CARD_WIDTH,
@@ -212,7 +195,7 @@ const ApplicationsSection = () => {
               }}
             >
               <img
-                className="img"
+                className="img group-hover:scale-[1.08]"
                 src={app.image}
                 alt={app.label}
                 draggable={false}
@@ -228,7 +211,7 @@ const ApplicationsSection = () => {
               />
 
               <div
-                className="overlay"
+                className="overlay group-hover:opacity-100"
                 style={{
                   position: "absolute",
                   inset: 0,
@@ -240,7 +223,7 @@ const ApplicationsSection = () => {
               />
 
               <div
-                className="label"
+                className="label group-hover:translate-y-0"
                 style={{
                   position: "absolute",
                   bottom: 0,

@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 const products = [
@@ -38,120 +37,38 @@ const products = [
   },
 ];
 
-const ProductCard = ({ product, index }) => {
+const ProductCard = ({ product, delay }) => {
   const router = useRouter();
-  const cardRef = useRef(null);
-
-  useEffect(() => {
-    const card = cardRef.current;
-    if (!card) return;
-
-    card.style.opacity = "0";
-    card.style.transform = "translateY(40px)";
-    card.style.transition = `opacity 0.6s ease ${
-      index * 120
-    }ms, transform 0.6s ease ${index * 120}ms`;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          card.style.opacity = "1";
-          card.style.transform = "translateY(0)";
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.15 }
-    );
-
-    observer.observe(card);
-
-    return () => observer.disconnect();
-  }, [index]);
 
   return (
     <div
-      ref={cardRef}
+      data-animate="up"
+      data-delay={delay}
       onClick={() => router.push(product.link)}
-      style={{
-        borderRadius: 20,
-        border: "1px solid #e5e7eb",
-        overflow: "hidden",
-        background: "white",
-        cursor: "pointer",
-        transition: "transform 0.3s ease, box-shadow 0.3s ease",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-6px)";
-        e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,0.12)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "none";
-      }}
+      className="group cursor-pointer overflow-hidden rounded-[20px] border border-[#e5e7eb] bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)]"
     >
       <div
-        style={{
-          background: product.color,
-          height: 220,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          position: "relative",
-          overflow: "hidden",
-        }}
+        className="relative flex h-[220px] items-center justify-center overflow-hidden"
+        style={{ background: product.color }}
       >
         <img
           src={product.image}
           alt={product.name}
           loading="lazy"
-          style={{
-            height: 160,
-            objectFit: "contain",
-            transition: "transform 0.4s ease",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "scale(1.1)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "scale(1)";
-          }}
+          className="h-40 object-contain transition-transform duration-300 group-hover:scale-110"
         />
 
         {product.badge && (
-          <span
-            style={{
-              position: "absolute",
-              top: 12,
-              right: 12,
-              background: "#dc2626",
-              color: "#fff",
-              fontSize: 10,
-              fontWeight: 700,
-              padding: "3px 10px",
-              borderRadius: 999,
-              letterSpacing: 1,
-              textTransform: "uppercase",
-            }}
-          >
+          <span className="absolute right-3 top-3 rounded-full bg-[#dc2626] px-[10px] py-[3px] text-[10px] font-bold uppercase tracking-[1px] text-white">
             {product.badge}
           </span>
         )}
       </div>
 
-      <div
-        style={{
-          padding: "16px 20px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          borderTop: "1px solid #f3f4f6",
-        }}
-      >
+      <div className="flex items-center justify-between border-t border-[#f3f4f6] px-5 py-4">
         <div>
-          <p style={{ fontWeight: 800, color: "#111827", marginBottom: 4 }}>
-            {product.name}
-          </p>
-          <p style={{ fontSize: 12, color: "#9ca3af" }}>{product.core}</p>
+          <p className="mb-1 font-extrabold text-[#111827]">{product.name}</p>
+          <p className="text-xs text-[#9ca3af]">{product.core}</p>
         </div>
 
         <button
@@ -159,18 +76,9 @@ const ProductCard = ({ product, index }) => {
             e.stopPropagation();
             router.push(product.link);
           }}
-          style={{
-            background: "#fef2f2",
-            border: "none",
-            borderRadius: 999,
-            padding: "8px 16px",
-            fontSize: 12,
-            fontWeight: 700,
-            color: "#dc2626",
-            cursor: "pointer",
-          }}
+          className="rounded-full bg-[#fef2f2] px-4 py-2 text-xs font-bold text-[#dc2626] transition-colors duration-300 hover:bg-[#fee2e2]"
         >
-          View →
+          View -&gt;
         </button>
       </div>
     </div>
@@ -178,45 +86,19 @@ const ProductCard = ({ product, index }) => {
 };
 
 const ProductRange = () => {
-  const titleRef = useRef(null);
-
-  useEffect(() => {
-    const el = titleRef.current;
-    if (!el) return;
-
-    el.style.opacity = "0";
-    el.style.transform = "translateY(30px)";
-    el.style.transition = "opacity 0.7s ease, transform 0.7s ease";
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.style.opacity = "1";
-          el.style.transform = "translateY(0)";
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.2 }
-    );
-
-    observer.observe(el);
-
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <section className="w-full py-20 px-6 bg-white">
-      <div className="max-w-7xl mx-auto">
-        <div ref={titleRef} className="mb-12">
-          <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+    <section className="w-full bg-white px-6 py-20">
+      <div className="mx-auto max-w-7xl">
+        <div data-animate="up" className="mb-12">
+          <p className="mb-2 text-xs font-bold uppercase tracking-widest text-gray-400">
             Our Products
           </p>
 
-          <h2 className="text-2xl md:text-4xl font-black uppercase text-red-600 leading-tight mb-3 max-w-6xl">
+          <h2 className="mb-3 max-w-6xl text-2xl font-black uppercase leading-tight text-red-600 md:text-4xl">
             Our Range Of PUF Panels For All Your Roofing And Wall Cladding Needs
           </h2>
 
-          <p className="text-sm text-gray-500 mt-4 max-w-3xl leading-relaxed">
+          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-gray-500">
             As A Trusted Sandwich PUF Panel Manufacturer, We Offer PUF Panel For
             Roof, PUF Panel For Wall, Concealed Panel And Cold Storage PUF Panel
             Solutions Designed To Meet Your Building&apos;s Energy Efficiency
@@ -224,9 +106,13 @@ const ProductRange = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product, index) => (
-            <ProductCard key={product.name} product={product} index={index} />
+            <ProductCard
+              key={product.name}
+              product={product}
+              delay={index * 120}
+            />
           ))}
         </div>
       </div>

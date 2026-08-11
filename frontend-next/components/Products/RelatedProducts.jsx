@@ -1,8 +1,28 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { PRODUCTS } from "./productData";
+
+const ProductImage = ({ rel }) => {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return <span style={{ fontSize: 56 }}>🏗️</span>;
+  }
+
+  return (
+    <img
+      src={rel.image}
+      alt={rel.name}
+      loading="lazy"
+      className="h-28 object-contain group-hover:scale-105 transition-transform duration-300"
+      onError={() => setFailed(true)}
+    />
+  );
+};
+
 
 const ROUTES = {
   roofPanel: "/products/roof-panel",
@@ -53,21 +73,7 @@ const RelatedProducts = ({ product }) => {
 
                   style={{ background: rel.lightColor }}
                 >
-                  <img
-                    src={rel.image}
-
-                    alt={rel.name}
-
-                    loading="lazy"
-
-                    className="h-28 object-contain group-hover:scale-105 transition-transform duration-300"
-
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-
-                      e.currentTarget.parentElement.innerHTML += `<span style="font-size:56px">🏗️</span>`;
-                    }}
-                  />
+                  <ProductImage rel={rel} />
                 </div>
 
                 {/* Badge */}

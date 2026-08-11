@@ -3,168 +3,128 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
-// ════════════════════════════════════════════════════════
+// ============================================================================
 // 1. SCROLL ANIMATIONS
 // Usage: <div data-animate="up" data-delay="200">...</div>
 // Values: up | down | left | right | zoom | flip
-// ════════════════════════════════════════════════════════
+// ============================================================================
 export const useScrollAnimation = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Re-run when page changes
+    let observer;
     const timer = setTimeout(() => {
       const elements = document.querySelectorAll("[data-animate]");
+      if (!elements.length) return;
 
-      elements.forEach((el) => {
-        const direction = el.getAttribute("data-animate") || "up";
-        const delay = el.getAttribute("data-delay") || "0";
-
-        el.style.opacity = "0";
-        el.style.transition = `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms`;
-
-        switch (direction) {
-          case "up":
-            el.style.transform = "translateY(50px)";
-            break;
-          case "down":
-            el.style.transform = "translateY(-50px)";
-            break;
-          case "left":
-            el.style.transform = "translateX(-60px)";
-            break;
-          case "right":
-            el.style.transform = "translateX(60px)";
-            break;
-          case "zoom":
-            el.style.transform = "scale(0.8)";
-            break;
-          case "flip":
-            el.style.transform = "rotateX(90deg)";
-            break;
-          default:
-            el.style.transform = "translateY(50px)";
-        }
-      });
-
-      const observer = new IntersectionObserver(
+      observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              entry.target.style.opacity = "1";
-              entry.target.style.transform = "none";
-              observer.unobserve(entry.target);
+              entry.target.classList.add("is-visible");
+              observer?.unobserve(entry.target);
             }
           });
         },
-        { threshold: 0.15 },
+        { threshold: 0.15 }
       );
 
       elements.forEach((el) => observer.observe(el));
-
-      return () => observer.disconnect();
     }, 100);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      if (observer) observer.disconnect();
+    };
   }, [pathname]);
 };
 
-// ════════════════════════════════════════════════════════
+// ============================================================================
 // 2. PARALLAX SCROLL EFFECT
 // Usage: <div data-parallax="0.3">...</div>
-// ════════════════════════════════════════════════════════
+// ============================================================================
 export const useParallax = () => {
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const elements = document.querySelectorAll("[data-parallax]");
+    let ticking = false;
+    let rafId = 0;
 
-      elements.forEach((el) => {
-        const speed = parseFloat(el.getAttribute("data-parallax")) || 0.3;
-        el.style.transform = `translateY(${scrollY * speed}px)`;
-      });
+    const updateParallax = () => {
+      const elements = document.querySelectorAll("[data-parallax]");
+      if (elements.length > 0) {
+        const scrollY = window.scrollY;
+        elements.forEach((el) => {
+          const speed = parseFloat(el.getAttribute("data-parallax")) || 0.3;
+          el.style.transform = "translate3d(0, " + scrollY * speed + "px, 0)";
+        });
+      }
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        rafId = requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
     };
 
     window.addEventListener("scroll", handleScroll, {
       passive: true,
     });
+    handleScroll();
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 };
 
-// ════════════════════════════════════════════════════════
+// ============================================================================
 // 3. STICKY HERO LOCK
-// ════════════════════════════════════════════════════════
+// ============================================================================
 export const useStickyHero = (isHomePage = false) => {
-  const pathname = usePathname();
-
   useEffect(() => {
-    // Reset all styles first
-    const resetAll = () => {
-      const hero = document.getElementById("hero-section");
-
-      if (hero) {
-        hero.style.position = "";
-        hero.style.top = "";
-        hero.style.zIndex = "";
-        hero.style.height = "";
-
-        let next = hero.nextElementSibling;
-
-        while (next) {
-          next.style.position = "";
-          next.style.zIndex = "";
-          next.style.boxShadow = "";
-          next = next.nextElementSibling;
-        }
-      }
-
-      window.scrollTo(0, 0);
-    };
-
-    resetAll();
-
     if (!isHomePage) return;
 
     const hero = document.getElementById("hero-section");
-
     if (!hero) return;
 
-    hero.style.position = "sticky";
-    hero.style.top = "0";
-    hero.style.zIndex = "1";
-    hero.style.height = "100vh";
-
-    let next = hero.nextElementSibling;
-
-    while (next) {
-      next.style.position = "relative";
-      next.style.zIndex = "2";
-      next.style.boxShadow = "0 -12px 50px rgba(0,0,0,0.18)";
-      next = next.nextElementSibling;
-    }
+    hero.classList.add("sticky-hero-section");
 
     return () => {
-      resetAll();
+      hero.classList.remove("sticky-hero-section");
     };
-  }, [isHomePage, pathname]);
+  }, [isHomePage]);
 };
 
-// ════════════════════════════════════════════════════════
+// ============================================================================
 // 4. BACK TO TOP BUTTON
-// ════════════════════════════════════════════════════════
+// ============================================================================
 const BackToTop = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 400);
+    let ticking = false;
+    let rafId = 0;
+
+    const onScroll = () => {
+      if (!ticking) {
+        rafId = requestAnimationFrame(() => {
+          setVisible(window.scrollY > 400);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
 
     window.addEventListener("scroll", onScroll, {
       passive: true,
     });
 
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
   if (!visible) return null;
@@ -177,43 +137,17 @@ const BackToTop = () => {
           behavior: "smooth",
         })
       }
-      style={{
-        position: "fixed",
-        bottom: 32,
-        right: 32,
-        width: 48,
-        height: 48,
-        borderRadius: "50%",
-        background: "#dc2626",
-        color: "white",
-        border: "none",
-        fontSize: 20,
-        cursor: "pointer",
-        zIndex: 9999,
-        boxShadow: "0 4px 20px rgba(220,38,38,0.4)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        transition: "transform 0.2s, box-shadow 0.2s",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "scale(1.1) translateY(-3px)";
-        e.currentTarget.style.boxShadow = "0 8px 25px rgba(220,38,38,0.5)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "scale(1)";
-        e.currentTarget.style.boxShadow = "0 4px 20px rgba(220,38,38,0.4)";
-      }}
+      className="fixed bottom-8 right-8 w-12 h-12 rounded-full bg-red-600 text-white border-none text-xl cursor-pointer z-[9999] shadow-[0_4px_20px_rgba(220,38,38,0.4)] flex items-center justify-center transition-all duration-200 hover:scale-110 hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(220,38,38,0.5)]"
       aria-label="Back to top"
     >
-      ↑
+      ?
     </button>
   );
 };
 
-// ════════════════════════════════════════════════════════
+// ============================================================================
 // MAIN EXPORT
-// ════════════════════════════════════════════════════════
+// ============================================================================
 const GlobalEffects = ({ isHomePage = false }) => {
   useScrollAnimation();
   useParallax();

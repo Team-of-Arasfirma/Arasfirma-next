@@ -69,17 +69,7 @@ const Accessories = ({ product }) => {
             <button
               type="button"
               onClick={scrollLeft}
-              className="w-10 h-10 rounded-full bg-white border border-gray-200 shadow flex items-center justify-center text-gray-600 transition-all duration-200"
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = product.color;
-                e.currentTarget.style.color = "white";
-                e.currentTarget.style.borderColor = product.color;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "white";
-                e.currentTarget.style.color = "#4b5563";
-                e.currentTarget.style.borderColor = "#e5e7eb";
-              }}
+              className="w-10 h-10 rounded-full bg-white border border-gray-200 shadow flex items-center justify-center text-gray-600 transition-all duration-200 hover:bg-red-600 hover:text-white hover:border-red-600"
               aria-label="Scroll accessories left"
             >
               ←
@@ -88,17 +78,7 @@ const Accessories = ({ product }) => {
             <button
               type="button"
               onClick={scrollRight}
-              className="w-10 h-10 rounded-full bg-white border border-gray-200 shadow flex items-center justify-center text-gray-600 transition-all duration-200"
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = product.color;
-                e.currentTarget.style.color = "white";
-                e.currentTarget.style.borderColor = product.color;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "white";
-                e.currentTarget.style.color = "#4b5563";
-                e.currentTarget.style.borderColor = "#e5e7eb";
-              }}
+              className="w-10 h-10 rounded-full bg-white border border-gray-200 shadow flex items-center justify-center text-gray-600 transition-all duration-200 hover:bg-red-600 hover:text-white hover:border-red-600"
               aria-label="Scroll accessories right"
             >
               →
