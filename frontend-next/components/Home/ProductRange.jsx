@@ -55,7 +55,7 @@ const ProductCard = ({ product, delay }) => {
           src={product.image}
           alt={product.name}
           loading="lazy"
-          className="h-40 object-contain transition-transform duration-300 group-hover:scale-110"
+          className="h-40 max-w-[90%] object-contain transition-transform duration-300 group-hover:scale-110"
         />
 
         {product.badge && (
@@ -65,20 +65,28 @@ const ProductCard = ({ product, delay }) => {
         )}
       </div>
 
-      <div className="flex items-center justify-between border-t border-[#f3f4f6] px-5 py-4">
-        <div>
-          <p className="mb-1 font-extrabold text-[#111827]">{product.name}</p>
-          <p className="text-xs text-[#9ca3af]">{product.core}</p>
+      <div className="flex min-h-[116px] items-center justify-between gap-4 border-t border-[#f3f4f6] px-5 py-4">
+        <div className="min-w-0 flex-1">
+          <p className="mb-1 text-[16px] font-extrabold leading-snug text-[#111827]">
+            {product.name}
+          </p>
+
+          <p className="text-xs leading-snug text-[#9ca3af]">
+            {product.core}
+          </p>
         </div>
 
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             router.push(product.link);
           }}
-          className="rounded-full bg-[#fef2f2] px-4 py-2 text-xs font-bold text-[#dc2626] transition-colors duration-300 hover:bg-[#fee2e2]"
+          className="shrink-0 rounded-full bg-[#fef2f2] px-4 py-2 text-xs font-bold text-[#dc2626] transition-colors duration-300 hover:bg-[#fee2e2]"
         >
-          View -&gt;
+          <span className="inline-flex items-center gap-1 whitespace-nowrap">
+            View <span>→</span>
+          </span>
         </button>
       </div>
     </div>

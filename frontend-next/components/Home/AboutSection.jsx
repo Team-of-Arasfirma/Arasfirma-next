@@ -29,7 +29,7 @@ const AboutSection = () => {
           <h2
             data-animate="up"
             data-delay="400"
-            className="text-2xl md:text-4xl font-black uppercase text-red-600 leading-tight mb-4"
+            className="text-2xl md:text-4xl font-black uppercase text-red-600 leading-tight mb-5"
           >
             Committed To Excellence
           </h2>
@@ -37,7 +37,7 @@ const AboutSection = () => {
           <p
             data-animate="up"
             data-delay="500"
-            className="text-md text-gray-600 leading-relaxed mb-8"
+            className="text-md text-gray-600 leading-8 mb-0"
           >
             At Arasfirma, We Are Dedicated To Providing Premium PUF Panel
             Solutions Tailored To Meet Your Specific Requirements. With Years Of
@@ -51,7 +51,7 @@ const AboutSection = () => {
             data-animate="zoom"
             data-delay="600"
             onClick={() => router.push("/about")}
-            className="bg-red-600 text-white text-sm font-semibold px-8 py-3 rounded-full flex items-center gap-2 hover:bg-red-400 hover:shadow-lg hover:shadow-red-200 active:scale-95 transition-all duration-300"
+            className="mt-17 bg-red-600 text-white text-sm font-semibold px-8 py-3 rounded-full inline-flex items-center gap-2 hover:bg-red-400 hover:shadow-lg hover:shadow-red-200 active:scale-95 transition-all duration-300"
           >
             Know More <span>→</span>
           </button>
