@@ -25,12 +25,20 @@ const URL_CATEGORIES = [
     value: "puf-panels",
   },
   {
+    label: "PUF Panel Wall",
+    value: "puf-panel-wall",
+  },
+  {
     label: "PUF Panel Roof",
     value: "puf-panel-roof",
   },
   {
-    label: "PUF Panel Wall",
-    value: "puf-panel-wall",
+    label: "Poultry Farming",
+    value: "puf-panels/poultry-farming",
+  },
+  {
+    label: "Mushroom Farming",
+    value: "puf-panels/mushroom-farming",
   },
 ];
 

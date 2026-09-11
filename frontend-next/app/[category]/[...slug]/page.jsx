@@ -10,6 +10,8 @@ const ALLOWED_CATEGORIES = [
   "puf-panels",
   "puf-panel-roof",
   "puf-panel-wall",
+  "puf-panels/poultry-farming",
+  "puf-panels/mushroom-farming",
 ];
 
 const getApiBase = () => API_BASE_URL.replace(/\/$/, "");
@@ -20,12 +22,22 @@ const stripHtml = (value = "") =>
     .replace(/\s+/g, " ")
     .trim();
 
-const buildSlugPath = (slugParam) => {
-  if (Array.isArray(slugParam)) {
-    return slugParam.join("/");
-  }
+const getBlogRouteData = (category, slugParam) => {
+  const slugParts = Array.isArray(slugParam)
+    ? slugParam
+    : slugParam
+    ? [slugParam]
+    : [];
 
-  return slugParam || "";
+  const blogSlug = slugParts[slugParts.length - 1] || "";
+  const categorySlug = [category, ...slugParts.slice(0, -1)].join("/");
+  const fullPath = `/${categorySlug}/${blogSlug}`;
+
+  return {
+    blogSlug,
+    categorySlug,
+    fullPath,
+  };
 };
 
 const fetchRedirectByPath = async (fromPath) => {
@@ -83,18 +95,21 @@ const fetchBlogBySlug = async (slug) => {
 
 export async function generateMetadata({ params }) {
   const { category, slug } = await params;
+  const { blogSlug, categorySlug, fullPath } = getBlogRouteData(
+    category,
+    slug
+  );
 
-  if (!ALLOWED_CATEGORIES.includes(category)) {
+  const url = `${SITE_URL}${fullPath}`;
+
+  if (!ALLOWED_CATEGORIES.includes(categorySlug) || !blogSlug) {
     return {
       title: "Blog",
       description: "Arasfirma blog article.",
     };
   }
 
-  const slugPath = buildSlugPath(slug);
-  const url = `${SITE_URL}/${category}/${slugPath}`;
-
-  const blog = await fetchBlogBySlug(slugPath);
+  const blog = await fetchBlogBySlug(blogSlug);
 
   if (!blog) {
     return {
@@ -113,7 +128,10 @@ export async function generateMetadata({ params }) {
   }
 
   const title = blog?.metaTitle || blog?.title || "Blog";
-  const description = blog?.metaDescription || stripHtml(blog?.content || "");
+  const description =
+    blog?.metaDescription ||
+    stripHtml(blog?.content || "").slice(0, 160) ||
+    "Arasfirma blog article.";
 
   return {
     title,
@@ -133,25 +151,26 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
   const { category, slug } = await params;
+  const { blogSlug, categorySlug, fullPath } = getBlogRouteData(
+    category,
+    slug
+  );
 
-  if (!ALLOWED_CATEGORIES.includes(category)) {
+  if (!ALLOWED_CATEGORIES.includes(categorySlug) || !blogSlug) {
     notFound();
   }
 
-  const slugPath = buildSlugPath(slug);
-  const fromPath = `/${category}/${slugPath}`;
-
-  const redirectEntry = await fetchRedirectByPath(fromPath);
+  const redirectEntry = await fetchRedirectByPath(fullPath);
 
   if (redirectEntry?.to) {
     redirect(redirectEntry.to);
   }
 
-  const blog = await fetchBlogBySlug(slugPath);
+  const blog = await fetchBlogBySlug(blogSlug);
 
   if (!blog) {
     notFound();
   }
 
-  return <BlogRead slug={slugPath} initialBlog={blog} />;
+  return <BlogRead slug={blogSlug} initialBlog={blog} />;
 }

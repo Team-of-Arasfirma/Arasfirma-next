@@ -52,10 +52,16 @@ const blogSchema = new mongoose.Schema(
     categorySlug: {
       type: String,
       default: "puf-panels",
-      enum: ["puf-panels", "puf-panel-roof", "puf-panel-wall"],
+      enum: [
+        "puf-panels",
+        "puf-panel-wall",
+        "puf-panel-roof",
+        "puf-panels/poultry-farming",
+        "puf-panels/mushroom-farming",
+      ],
       lowercase: true,
       trim: true,
-    },
+    },  
 
     published: {
       type: Boolean,
