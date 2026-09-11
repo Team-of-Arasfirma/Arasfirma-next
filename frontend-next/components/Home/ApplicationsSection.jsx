@@ -1,16 +1,19 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const applications = [
-  { label: "Educational Institution", image: "/assets/applications/app1.jpeg" },
-  { label: "Industrial Shed", image: "/assets/applications/app2.JPG" },
-  { label: "Portable Cabin", image: "/assets/applications/app3.png" },
-  { label: "Cold Storage", image: "/assets/applications/app4.jpeg" },
-  { label: "Warehouse", image: "/assets/applications/app5.jpeg" },
-  { label: "Commercial Building", image: "/assets/applications/app6.png" },
-];
+import {
+  API_BASE_URL,
+  FALLBACK_IMAGE,
+  assertProjectApiUrl,
+  categoryKey,
+  formatTitleCase,
+  firstText,
+  extractProjects,
+  isPublicProject,
+  getProjectImage,
+} from "@/lib/services/projectService";
 
 const CARD_WIDTH = 280;
 const CARD_HEIGHT = 220;
@@ -26,16 +29,79 @@ const ApplicationsSection = () => {
 
   const [isDrag, setIsDrag] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const goToProjects = () => {
     router.push("/projects");
   };
 
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadApplications = async () => {
+      try {
+        assertProjectApiUrl();
+
+        const response = await fetch(
+          `${API_BASE_URL}/api/projects?status=published`,
+          {
+            signal: controller.signal,
+            cache: "no-store",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Unable to fetch projects");
+        }
+
+        const data = await response.json();
+
+        const publishedProjects = extractProjects(data).filter(isPublicProject);
+
+        const categoryMap = new Map();
+
+        publishedProjects.forEach((project) => {
+          const category = firstText(project.category);
+
+          if (!category) return;
+
+          const key = categoryKey(category);
+
+          if (!categoryMap.has(key)) {
+            categoryMap.set(key, {
+              label: formatTitleCase(category),
+              image: getProjectImage(project) || FALLBACK_IMAGE,
+            });
+          }
+        });
+
+        const dynamicApplications = Array.from(categoryMap.values());
+
+        if (!controller.signal.aborted) {
+          setApplications(dynamicApplications);
+        }
+      } catch {
+        if (!controller.signal.aborted) {
+          setApplications([]);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadApplications();
+
+    return () => controller.abort();
+  }, []);
+
   const handleScroll = () => {
     if (!rowRef.current) return;
 
     const index = Math.round(
-      rowRef.current.scrollLeft / (CARD_WIDTH + CARD_GAP),
+      rowRef.current.scrollLeft / (CARD_WIDTH + CARD_GAP)
     );
 
     setActiveIndex(Math.min(index, applications.length - 1));
@@ -105,6 +171,10 @@ const ApplicationsSection = () => {
     setActiveIndex(i);
   };
 
+  if (!loading && applications.length === 0) {
+    return null;
+  }
+
   return (
     <section className="w-full py-16 bg-gray-100 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 flex items-start justify-between mb-8">
@@ -128,25 +198,29 @@ const ApplicationsSection = () => {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-6">
-        <button
-          type="button"
-          onClick={scrollLeft}
-          className="absolute top-1/2 -translate-y-1/2 z-10 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-600 hover:bg-red-600 hover:text-white transition-all"
-          style={{ left: 4 }}
-          aria-label="Scroll left"
-        >
-          ←
-        </button>
+        {applications.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={scrollLeft}
+              className="absolute top-1/2 -translate-y-1/2 z-10 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-600 hover:bg-red-600 hover:text-white transition-all"
+              style={{ left: 4 }}
+              aria-label="Scroll left"
+            >
+              ←
+            </button>
 
-        <button
-          type="button"
-          onClick={scrollRight}
-          className="absolute top-1/2 -translate-y-1/2 z-10 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-600 hover:bg-red-600 hover:text-white transition-all"
-          style={{ right: 4 }}
-          aria-label="Scroll right"
-        >
-          →
-        </button>
+            <button
+              type="button"
+              onClick={scrollRight}
+              className="absolute top-1/2 -translate-y-1/2 z-10 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-600 hover:bg-red-600 hover:text-white transition-all"
+              style={{ right: 4 }}
+              aria-label="Scroll right"
+            >
+              →
+            </button>
+          </>
+        )}
 
         <div
           ref={rowRef}
@@ -174,124 +248,148 @@ const ApplicationsSection = () => {
             }
           `}</style>
 
-          {applications.map((app) => (
-            <div
-              key={app.label}
-              onClick={() => {
-                if (!isDrag) goToProjects();
-              }}
-              className="group"
-              style={{
-                minWidth: CARD_WIDTH,
-                maxWidth: CARD_WIDTH,
-                width: CARD_WIDTH,
-                height: CARD_HEIGHT,
-                borderRadius: 20,
-                overflow: "hidden",
-                position: "relative",
-                flexShrink: 0,
-                cursor: isDrag ? "grabbing" : "pointer",
-                scrollSnapAlign: "start",
-              }}
-            >
-              <img
-                className="img group-hover:scale-[1.08]"
-                src={app.image}
-                alt={app.label}
-                draggable={false}
+          {loading &&
+            Array.from({ length: 6 }, (_, index) => (
+              <div
+                key={`application-skeleton-${index}`}
+                className="animate-pulse bg-gray-200"
                 style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  objectPosition: "center",
-                  transition: "transform 0.5s ease",
-                  pointerEvents: "none",
-                  display: "block",
+                  minWidth: CARD_WIDTH,
+                  maxWidth: CARD_WIDTH,
+                  width: CARD_WIDTH,
+                  height: CARD_HEIGHT,
+                  borderRadius: 20,
+                  flexShrink: 0,
                 }}
               />
+            ))}
 
+          {!loading &&
+            applications.map((app) => (
               <div
-                className="overlay group-hover:opacity-100"
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background:
-                    "linear-gradient(to top, rgba(0,0,0,0.75), transparent 60%)",
-                  opacity: 0,
-                  transition: "opacity 0.4s ease",
+                key={app.label}
+                onClick={() => {
+                  if (!isDrag) goToProjects();
                 }}
-              />
-
-              <div
-                className="label group-hover:translate-y-0"
+                className="group"
                 style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  padding: "16px 20px",
-                  transform: "translateY(100%)",
-                  transition: "transform 0.4s ease",
+                  minWidth: CARD_WIDTH,
+                  maxWidth: CARD_WIDTH,
+                  width: CARD_WIDTH,
+                  height: CARD_HEIGHT,
+                  borderRadius: 20,
+                  overflow: "hidden",
+                  position: "relative",
+                  flexShrink: 0,
+                  cursor: isDrag ? "grabbing" : "pointer",
+                  scrollSnapAlign: "start",
                 }}
               >
-                <p
+                <img
+                  className="img group-hover:scale-[1.08]"
+                  src={app.image}
+                  alt={app.label}
+                  draggable={false}
                   style={{
-                    color: "white",
-                    fontWeight: 900,
-                    fontSize: 15,
-                    textTransform: "uppercase",
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    objectPosition: "center",
+                    transition: "transform 0.5s ease",
+                    pointerEvents: "none",
+                    display: "block",
                   }}
-                >
-                  {app.label}
-                </p>
+                  onError={(event) => {
+                    if (event.currentTarget.src !== FALLBACK_IMAGE) {
+                      event.currentTarget.src = FALLBACK_IMAGE;
+                    }
+                  }}
+                />
 
-                <p
+                <div
+                  className="overlay group-hover:opacity-100"
                   style={{
-                    color: "#fca5a5",
-                    fontSize: 11,
-                    fontWeight: 600,
-                    marginTop: 4,
+                    position: "absolute",
+                    inset: 0,
+                    background:
+                      "linear-gradient(to top, rgba(0,0,0,0.75), transparent 60%)",
+                    opacity: 1,
+                    transition: "opacity 0.4s ease",
+                  }}
+                />
+
+                <div
+                  className="label group-hover:translate-y-0"
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    padding: "16px 20px",
+                    transform: "translateY(0)",
+                    transition: "transform 0.4s ease",
                   }}
                 >
-                  View Projects →
-                </p>
+                  <p
+                    style={{
+                      color: "white",
+                      fontWeight: 900,
+                      fontSize: 15,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {app.label}
+                  </p>
+
+                  <p
+                    style={{
+                      color: "#fca5a5",
+                      fontSize: 11,
+                      fontWeight: 600,
+                      marginTop: 4,
+                    }}
+                  >
+                    View Projects →
+                  </p>
+                </div>
+
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: 4,
+                    background: "#dc2626",
+                  }}
+                />
               </div>
-
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  height: 4,
-                  background: "#dc2626",
-                }}
-              />
-            </div>
-          ))}
+            ))}
         </div>
       </div>
 
-      <div className="flex justify-center mt-6 gap-2">
-        {applications.map((_, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => scrollToIndex(i)}
-            aria-label={`Go to application ${i + 1}`}
-            style={{
-              width: i === activeIndex ? 28 : 8,
-              height: 8,
-              borderRadius: 999,
-              background: i === activeIndex ? "#dc2626" : "#d1d5db",
-              border: "none",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-              padding: 0,
-            }}
-          />
-        ))}
-      </div>
+      {!loading && applications.length > 1 && (
+        <div className="flex justify-center mt-6 gap-2">
+          {applications.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => scrollToIndex(i)}
+              aria-label={`Go to application ${i + 1}`}
+              style={{
+                width: i === activeIndex ? 28 : 8,
+                height: 8,
+                borderRadius: 999,
+                background: i === activeIndex ? "#dc2626" : "#d1d5db",
+                border: "none",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                padding: 0,
+              }}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 };
