@@ -14,6 +14,7 @@ const blogSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      match: [/^[^\s/?#%]+$/, "Slug must be a single URL segment"],
       lowercase: true,
       trim: true,
     },

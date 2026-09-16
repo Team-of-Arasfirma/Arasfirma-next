@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import BlogRead from "@/components/Blog/BlogRead";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  process.env.NEXT_PUBLIC_API_URL || "https://arasfirma-next.onrender.com";
 
 const SITE_URL = "https://www.arasfirma.com";
 
@@ -51,15 +51,11 @@ const fetchRedirectByPath = async (fromPath) => {
       }
     );
 
-    if (!res.ok) {
-      return null;
-    }
+    if (!res.ok) return null;
 
     const data = await res.json();
 
-    if (!data?.success || !data?.data?.to) {
-      return null;
-    }
+    if (!data?.success || !data?.data?.to) return null;
 
     return data.data;
   } catch {
@@ -76,16 +72,12 @@ const fetchBlogBySlug = async (slug) => {
       }
     );
 
-    if (!res.ok) {
-      return null;
-    }
+    if (!res.ok) return null;
 
     const data = await res.json();
     const blog = data?.data || data?.blog || data;
 
-    if (!blog || blog?.success === false) {
-      return null;
-    }
+    if (!blog || blog?.success === false) return null;
 
     return blog;
   } catch {
@@ -95,6 +87,7 @@ const fetchBlogBySlug = async (slug) => {
 
 export async function generateMetadata({ params }) {
   const { category, slug } = await params;
+
   const { blogSlug, categorySlug, fullPath } = getBlogRouteData(
     category,
     slug
@@ -151,6 +144,7 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
   const { category, slug } = await params;
+
   const { blogSlug, categorySlug, fullPath } = getBlogRouteData(
     category,
     slug

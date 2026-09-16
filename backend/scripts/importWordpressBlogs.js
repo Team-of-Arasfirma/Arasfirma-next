@@ -4,6 +4,7 @@ import { parseStringPromise } from 'xml2js';
 import slugify from 'slugify';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import { splitBlogPath } from './blogPath.js';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
@@ -231,7 +232,7 @@ function toBlogPayload(item, attachmentMap) {
 
   return {
     title,
-    slug,
+    ...splitBlogPath(slug, "puf-panels", cleanText(item?.link)),
     content,
     image: getFeaturedImage(item, attachmentMap, content) || '',
     author: getAuthor(item),

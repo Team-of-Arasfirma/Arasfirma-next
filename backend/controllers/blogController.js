@@ -13,6 +13,7 @@ const uploadBlogImageToCloudinary = (file) =>
       },
       (error, result) => {
         if (error) return reject(error);
+
         console.log("[Blog Cloudinary stream] secure_url:", result.secure_url);
         resolve(result.secure_url);
       }
@@ -23,7 +24,7 @@ const uploadBlogImageToCloudinary = (file) =>
 
 // Convert common HTML entities to readable text.
 const decodeHtmlEntities = (value = "") =>
-  value
+  String(value)
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .replace(/&nbsp;/g, " ")
@@ -91,13 +92,15 @@ export const getBlogs = async (req, res) => {
       query.categorySlug = categorySlug;
     }
 
-    const skip = (Number(page) - 1) * Number(limit);
+    const pageNumber = Math.max(Number(page) || 1, 1);
+    const limitNumber = Math.max(Number(limit) || 10, 1);
+    const skip = (pageNumber - 1) * limitNumber;
 
     const [blogs, total] = await Promise.all([
       Blog.find(query)
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(Number(limit))
+        .limit(limitNumber)
         .lean(),
       Blog.countDocuments(query),
     ]);
@@ -108,7 +111,6 @@ export const getBlogs = async (req, res) => {
       slug: blog.slug,
 
       // This is needed for admin edit form.
-      // Without this, saved content will not show when editing a blog.
       content: blog.content,
 
       image: blog.image,
@@ -129,9 +131,9 @@ export const getBlogs = async (req, res) => {
       data: listingBlogs,
       pagination: {
         total,
-        page: Number(page),
-        limit: Number(limit),
-        pages: Math.ceil(total / Number(limit)),
+        page: pageNumber,
+        limit: limitNumber,
+        pages: Math.ceil(total / limitNumber),
       },
     });
   } catch (error) {
@@ -143,18 +145,33 @@ export const getBlogs = async (req, res) => {
 // GET SINGLE BLOG BY SLUG
 export const getSingleBlog = async (req, res) => {
   try {
-    const slug = req.params.slug;
+    // Express has already decoded the route parameter.
+    const slug = (req.params.slug || "").trim();
 
-    const blog = await Blog.findOne({ slug });
+    if (!slug) {
+      return res.status(400).json({
+        success: false,
+        message: "Blog slug is required",
+      });
+    }
+
+    const blog = await Blog.findOne({
+      slug,
+      published: true,
+    }).lean();
 
     if (!blog) {
       return res.status(404).json({
         success: false,
         message: "Blog not found",
+        searchedSlug: slug,
       });
     }
 
-    res.status(200).json({ success: true, data: blog });
+    res.status(200).json({
+      success: true,
+      data: blog,
+    });
   } catch (error) {
     console.error("getSingleBlog error:", error.message);
     res.status(500).json({ success: false, message: "Server error" });
@@ -178,18 +195,25 @@ export const createBlog = async (req, res) => {
       metaDescription,
     } = req.body;
 
-    const cloudinaryImageUrl = req.file
-      ? await uploadBlogImageToCloudinary(req.file)
-      : image || imageUrl || "";
+    const cleanTitle = title?.trim();
+    const cleanSlug = slug?.trim().toLowerCase();
+    const cleanContent = content?.trim();
 
-    if (!title || !slug || !content) {
+    if (!cleanTitle || !cleanSlug || !cleanContent) {
       return res.status(400).json({
         success: false,
         message: "Title, slug, and content are required",
       });
     }
 
-    const existing = await Blog.findOne({ slug });
+    if (cleanSlug && /[\s/?#%]/.test(cleanSlug)) {
+      return res.status(400).json({
+        success: false,
+        message: "Slug must be a single URL segment; select the URL Category separately",
+      });
+    }
+
+    const existing = await Blog.findOne({ slug: cleanSlug });
 
     if (existing) {
       return res.status(400).json({
@@ -198,15 +222,19 @@ export const createBlog = async (req, res) => {
       });
     }
 
+    const cloudinaryImageUrl = req.file
+      ? await uploadBlogImageToCloudinary(req.file)
+      : image || imageUrl || "";
+
     const blog = await Blog.create({
-      title,
-      slug,
-      content,
+      title: cleanTitle,
+      slug: cleanSlug,
+      content: cleanContent,
       image: cloudinaryImageUrl,
       author: author || "Admin",
       category: category || "General",
       categorySlug: categorySlug || "puf-panels",
-      published: published || false,
+      published: published === true || published === "true",
       metaTitle: metaTitle || "",
       metaDescription: metaDescription || "",
     });
@@ -235,10 +263,6 @@ export const updateBlog = async (req, res) => {
       metaDescription,
     } = req.body;
 
-    const cloudinaryImageUrl = req.file
-      ? await uploadBlogImageToCloudinary(req.file)
-      : image || imageUrl;
-
     const blog = await Blog.findById(req.params.id);
 
     if (!blog) {
@@ -248,8 +272,20 @@ export const updateBlog = async (req, res) => {
       });
     }
 
-    if (slug && slug !== blog.slug) {
-      const existing = await Blog.findOne({ slug });
+    const cleanSlug = slug?.trim().toLowerCase();
+
+    if (cleanSlug && /[\s/?#%]/.test(cleanSlug)) {
+      return res.status(400).json({
+        success: false,
+        message: "Slug must be a single URL segment; select the URL Category separately",
+      });
+    }
+
+    if (cleanSlug && cleanSlug !== blog.slug) {
+      const existing = await Blog.findOne({
+        slug: cleanSlug,
+        _id: { $ne: blog._id },
+      });
 
       if (existing) {
         return res.status(400).json({
@@ -259,17 +295,24 @@ export const updateBlog = async (req, res) => {
       }
     }
 
+    const cloudinaryImageUrl = req.file
+      ? await uploadBlogImageToCloudinary(req.file)
+      : image || imageUrl;
+
     const updated = await Blog.findByIdAndUpdate(
       req.params.id,
       {
-        title: title ?? blog.title,
-        slug: slug ?? blog.slug,
+        title: title?.trim() || blog.title,
+        slug: cleanSlug || blog.slug,
         content: content ?? blog.content,
         image: cloudinaryImageUrl ?? blog.image,
         author: author ?? blog.author,
         category: category ?? blog.category,
         categorySlug: categorySlug ?? blog.categorySlug ?? "puf-panels",
-        published: published !== undefined ? published : blog.published,
+        published:
+          published !== undefined
+            ? published === true || published === "true"
+            : blog.published,
         metaTitle: metaTitle !== undefined ? metaTitle : blog.metaTitle,
         metaDescription:
           metaDescription !== undefined

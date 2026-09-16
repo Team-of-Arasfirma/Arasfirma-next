@@ -1,5 +1,10 @@
 import api from "@/lib/api/axios";
 
+// Use the same backend as the server-rendered blog pages.
+const blogApiBase = `${(
+  process.env.NEXT_PUBLIC_API_URL || "https://arasfirma-next.onrender.com"
+).replace(/\/$/, "")}/api`;
+
 const getText = (value) =>
   String(value ?? "")
     .trim()
@@ -132,7 +137,7 @@ export const fetchBlogs = async (params = {}) => {
   const key = `GET:/blogs:${stableStringify(params)}`;
 
   return requestOnce(key, async () => {
-    const response = await api.get("/blogs", { params });
+    const response = await api.get("/blogs", { params, baseURL: blogApiBase });
 
     return {
       blogs: normalizeBlogList(response.data),
@@ -150,7 +155,7 @@ export const fetchBlogBySlug = async (slug) => {
   const key = `GET:/blogs/${slug}`;
 
   return requestOnce(key, async () => {
-    const response = await api.get(`/blogs/${slug}`);
+    const response = await api.get(`/blogs/${encodeURIComponent(slug)}`, { baseURL: blogApiBase });
     return normalizeSingleBlog(response.data);
   });
 };
