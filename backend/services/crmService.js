@@ -8,11 +8,13 @@
 // [
 //   {
 //     "Name": "Customer Name",
+//     "Company Name": "Company Name",
 //     "Phone Number": "+919876543210",
 //     "Email": "customer@gmail.com",
-//     "Priority": null,
 //     "City": "Customer City",
-//     "Source": "MANUAL"
+//     "Approximate Sq Ft required for Puf Panels ?": "20000",
+//     "Query Message": "Customer message",
+//     "Source": "Organic"
 //   }
 // ]
 
@@ -118,11 +120,13 @@ export const syncInquiryToCrm = async (inquiry) => {
     const payload = [
       {
         Name: inquiry.name || "",
+        "Company Name": inquiry.businessName || inquiry.name || "",
         "Phone Number": phone,
         Email: inquiry.email || "",
-        Priority: null,
         City: inquiry.city || "Not Provided",
-        Source: "MANUAL",
+        "Approximate Sq Ft required for Puf Panels ?": inquiry.sqFt || "",
+        "Query Message": inquiry.message || "",
+        Source: "Organic",
       },
     ];
 
