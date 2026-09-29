@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
-  categoryOptions,
   formatTitleCase,
   fileUrl,
   getProjectImage,
@@ -18,7 +17,14 @@ import { useAuth } from "../context/AuthContext";
 import { canCreate, canEdit, canDelete } from "@/lib/adminPermissions";
 import AccessDeniedModal from "@/components/Admin/common/AccessDeniedModal";
 
-const EMPTY = { title: "", category: "", status: "draft", images: [] };
+const EMPTY = {
+  title: "",
+  category: "",
+  location: "",
+  status: "draft",
+  images: [],
+};
+
 const CATEGORIES = [
   "Industrial Building",
   "Warehouses",
@@ -45,10 +51,6 @@ export default function AdminProjects() {
   const [toast, setToast] = useState(null);
   const [deniedMessage, setDeniedMessage] = useState("");
 
-  const categories = categoryOptions([
-    ...CATEGORIES,
-    ...projects.map((project) => project.category),
-  ]);
   const fileRef = useRef(null);
   const previewUrls = useRef(new Set());
 
@@ -85,7 +87,7 @@ export default function AdminProjects() {
           error?.response?.data?.message ||
             error.message ||
             "Failed to load projects",
-          "error",
+          "error"
         );
       }
     } finally {
@@ -119,9 +121,11 @@ export default function AdminProjects() {
     setForm({
       title: project.title || project.name || "",
       category: project.category || "",
+      location: project.location || "",
       status: isPublicProject(project) ? "published" : "draft",
       images: getProjectImages(project),
     });
+
     setEditId(project._id);
     clearSelectedImages();
     setShowModal(true);
@@ -147,25 +151,29 @@ export default function AdminProjects() {
 
     const files = Array.from(e.target.files || []);
     e.target.value = "";
+
     if (selectedImages.length + files.length > 5) {
       showToast("Choose up to five new images at a time.", "error");
       return;
     }
+
     if (
       files.some(
         (file) =>
           !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
-          file.size > 5 * 1024 * 1024,
+          file.size > 5 * 1024 * 1024
       )
     ) {
       showToast("Choose JPG, PNG, or WebP images up to 5 MB each.", "error");
       return;
     }
+
     const additions = files.map((file) => {
       const url = URL.createObjectURL(file);
       previewUrls.current.add(url);
       return { file, url };
     });
+
     setSelectedImages((previous) => [...previous, ...additions]);
   };
 
@@ -173,19 +181,23 @@ export default function AdminProjects() {
     URL.revokeObjectURL(url);
     previewUrls.current.delete(url);
     setSelectedImages((previous) =>
-      previous.filter((image) => image.url !== url),
+      previous.filter((image) => image.url !== url)
     );
   };
 
   const uploadImages = async () => {
     if (!selectedImages.length) return form.images;
+
     const uploaded = await uploadProjectImages(
-      selectedImages.map(({ file }) => file),
+      selectedImages.map(({ file }) => file)
     );
+
     const images = [...form.images, ...uploaded];
+
     // Retain uploaded URLs if saving the project fails, so a retry does not upload twice.
     setForm((previous) => ({ ...previous, images }));
     clearSelectedImages();
+
     return images;
   };
 
@@ -203,10 +215,12 @@ export default function AdminProjects() {
     }
 
     if (saving) return;
-    if (!form.title.trim() || !form.category.trim()) {
-      showToast("Title and category are required.", "error");
+
+    if (!form.title.trim() || !form.category.trim() || !form.location.trim()) {
+      showToast("Title, category, and location are required.", "error");
       return;
     }
+
     setSaving(true);
 
     try {
@@ -215,6 +229,7 @@ export default function AdminProjects() {
       const payload = {
         title: form.title.trim(),
         category: form.category.trim(),
+        location: form.location.trim(),
         status: form.status,
         images,
       };
@@ -230,7 +245,7 @@ export default function AdminProjects() {
       } else {
         showToast(
           error?.response?.data?.message || error.message || "Failed to save",
-          "error",
+          "error"
         );
       }
     } finally {
@@ -250,7 +265,6 @@ export default function AdminProjects() {
 
     try {
       await deleteProject(id);
-
       showToast("Project deleted");
       fetchProjects();
     } catch (error) {
@@ -275,7 +289,9 @@ export default function AdminProjects() {
       )}
 
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Project Management</h2>
+        <h2 className="text-2xl font-bold text-gray-800">
+          Project Management
+        </h2>
 
         <button
           type="button"
@@ -313,8 +329,9 @@ export default function AdminProjects() {
                 <img
                   src={getProjectImage(project)}
                   onError={(event) => {
-                    if (event.currentTarget.src !== FALLBACK_IMAGE)
+                    if (event.currentTarget.src !== FALLBACK_IMAGE) {
                       event.currentTarget.src = FALLBACK_IMAGE;
+                    }
                   }}
                   alt={project.title}
                   loading="lazy"
@@ -327,13 +344,26 @@ export default function AdminProjects() {
               )}
 
               <div className="p-4">
-                <h3 className="font-semibold text-gray-900">{project.title}</h3>
+                <h3 className="font-semibold text-gray-900">
+                  {project.title}
+                </h3>
 
                 <p className="text-gray-500 text-sm mt-1">
                   {formatTitleCase(project.category)}
                 </p>
+
+                {project.location && (
+                  <p className="text-gray-500 text-sm mt-1">
+                    Location: {project.location}
+                  </p>
+                )}
+
                 <span
-                  className={`inline-block mt-2 text-xs px-2 py-0.5 rounded-full ${isPublicProject(project) ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"}`}
+                  className={`inline-block mt-2 text-xs px-2 py-0.5 rounded-full ${
+                    isPublicProject(project)
+                      ? "bg-green-50 text-green-700"
+                      : "bg-amber-50 text-amber-700"
+                  }`}
                 >
                   {isPublicProject(project) ? "Published" : "Draft"}
                 </span>
@@ -362,90 +392,106 @@ export default function AdminProjects() {
       )}
 
       {showModal && (
-        <div className="fixed inset-0 z-40 bg-black/10 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-40 bg-black/20 flex items-center justify-center p-4">
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="project-modal-title"
-            className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
           >
-            <div className="p-6 border-b flex justify-between items-center">
-              <h3
-                id="project-modal-title"
-                className="text-lg font-bold text-gray-800"
-              >
-                {editId ? "Edit Project" : "Add Project"}
-              </h3>
+            <div className="px-6 py-5 border-b flex justify-between items-center">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-gray-400 font-semibold">
+                  Project Management
+                </p>
+
+                <h3
+                  id="project-modal-title"
+                  className="text-xl font-bold text-gray-900 mt-1"
+                >
+                  {editId ? "Edit Project" : "Add Project"}
+                </h3>
+              </div>
 
               <button
                 type="button"
                 onClick={closeModal}
                 disabled={saving}
                 aria-label="Close project modal"
-                className="text-gray-400 hover:text-gray-600 text-2xl"
+                className="h-9 w-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 text-2xl"
               >
                 &times;
               </button>
             </div>
 
-            <form onSubmit={handleSave} className="p-6">
-              <fieldset disabled={saving} className="space-y-4">
+            <form onSubmit={handleSave} className="px-6 py-6">
+              <fieldset disabled={saving} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Project Images
                   </label>
 
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-                    <div className="flex flex-wrap gap-2">
-                      {form.images.map((src, index) => (
-                        <div key={`${src}-${index}`} className="relative">
-                          <img
-                            src={fileUrl(src)}
-                            alt={`Saved project image ${index + 1}`}
-                            className="h-20 w-20 object-cover rounded-lg"
-                          />
-                          <button
-                            type="button"
-                            aria-label={`Remove saved image ${index + 1}`}
-                            onClick={() =>
-                              setForm((previous) => ({
-                                ...previous,
-                                images: previous.images.filter(
-                                  (_, i) => i !== index,
-                                ),
-                              }))
-                            }
-                            className="absolute -top-2 -right-2 rounded-full bg-white shadow h-6 w-6 text-red-600"
-                          >
-                            &times;
-                          </button>
-                        </div>
-                      ))}
-                      {selectedImages.map(({ url }, index) => (
-                        <div key={url} className="relative">
-                          <img
-                            src={url}
-                            alt={`Selected project image ${index + 1}`}
-                            className="h-20 w-20 object-cover rounded-lg"
-                          />
-                          <button
-                            type="button"
-                            aria-label={`Remove selected image ${index + 1}`}
-                            onClick={() => removeSelectedImage(url)}
-                            className="absolute -top-2 -right-2 rounded-full bg-white shadow h-6 w-6 text-red-600"
-                          >
-                            &times;
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="border-2 border-dashed border-gray-300 rounded-2xl p-4 bg-gray-50/60">
+                    {(form.images.length > 0 || selectedImages.length > 0) && (
+                      <div className="flex flex-wrap gap-3 mb-4">
+                        {form.images.map((src, index) => (
+                          <div key={`${src}-${index}`} className="relative">
+                            <img
+                              src={fileUrl(src)}
+                              alt={`Saved project image ${index + 1}`}
+                              className="h-20 w-20 object-cover rounded-xl border border-gray-200"
+                            />
+
+                            <button
+                              type="button"
+                              aria-label={`Remove saved image ${index + 1}`}
+                              onClick={() =>
+                                setForm((previous) => ({
+                                  ...previous,
+                                  images: previous.images.filter(
+                                    (_, i) => i !== index
+                                  ),
+                                }))
+                              }
+                              className="absolute -top-2 -right-2 rounded-full bg-white shadow h-6 w-6 text-red-600 hover:bg-red-50"
+                            >
+                              &times;
+                            </button>
+                          </div>
+                        ))}
+
+                        {selectedImages.map(({ url }, index) => (
+                          <div key={url} className="relative">
+                            <img
+                              src={url}
+                              alt={`Selected project image ${index + 1}`}
+                              className="h-20 w-20 object-cover rounded-xl border border-gray-200"
+                            />
+
+                            <button
+                              type="button"
+                              aria-label={`Remove selected image ${index + 1}`}
+                              onClick={() => removeSelectedImage(url)}
+                              className="absolute -top-2 -right-2 rounded-full bg-white shadow h-6 w-6 text-red-600 hover:bg-red-50"
+                            >
+                              &times;
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                     <button
                       type="button"
                       onClick={() => fileRef.current?.click()}
-                      className="mt-3 text-sm text-blue-600 hover:text-blue-700"
+                      className="w-full rounded-xl border border-blue-100 bg-white px-4 py-4 text-sm font-semibold text-blue-600 hover:bg-blue-50"
                     >
                       Choose images (optional)
                     </button>
+
+                    <p className="text-xs text-gray-400 mt-2">
+                      JPG, PNG, or WebP. Maximum 5 MB each.
+                    </p>
                   </div>
 
                   <input
@@ -459,13 +505,14 @@ export default function AdminProjects() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Title *
                   </label>
 
                   <input
                     required
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter project title"
+                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={form.title}
                     onChange={(e) =>
                       setForm((prev) => ({ ...prev, title: e.target.value }))
@@ -476,13 +523,13 @@ export default function AdminProjects() {
                 <div>
                   <label
                     htmlFor="project-category"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                    className="block text-sm font-semibold text-gray-700 mb-2"
                   >
                     Category *
                   </label>
-                  <input
+
+                  <select
                     id="project-category"
-                    list="project-category-options"
                     required
                     value={form.category}
                     onChange={(e) =>
@@ -491,22 +538,48 @@ export default function AdminProjects() {
                         category: e.target.value,
                       }))
                     }
-                    placeholder="Choose or type a category"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm capitalize focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <datalist id="project-category-options">
-                    {categories.map((category) => (
-                      <option key={category} value={category} />
+                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Choose Category</option>
+                    {CATEGORIES.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
                     ))}
-                  </datalist>
+                  </select>
                 </div>
+
+                <div>
+                  <label
+                    htmlFor="project-location"
+                    className="block text-sm font-semibold text-gray-700 mb-2"
+                  >
+                    Location *
+                  </label>
+
+                  <input
+                    id="project-location"
+                    required
+                    value={form.location}
+                    onChange={(e) =>
+                      setForm((previous) => ({
+                        ...previous,
+                        location: e.target.value,
+                      }))
+                    }
+                    placeholder="Enter project location"
+                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
                 <div>
                   <label
                     htmlFor="project-status"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                    className="block text-sm font-semibold text-gray-700 mb-2"
                   >
                     Status
                   </label>
+
                   <select
                     id="project-status"
                     value={form.status}
@@ -516,18 +589,18 @@ export default function AdminProjects() {
                         status: e.target.value,
                       }))
                     }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="draft">Draft</option>
                     <option value="published">Published</option>
                   </select>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-2">
+                <div className="flex justify-end gap-3 pt-3">
                   <button
                     type="button"
                     onClick={closeModal}
-                    className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+                    className="px-5 py-2.5 text-sm border border-gray-300 rounded-xl hover:bg-gray-50 font-medium"
                   >
                     Cancel
                   </button>
@@ -535,7 +608,7 @@ export default function AdminProjects() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="px-6 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium"
+                    className="px-7 py-2.5 text-sm bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 font-semibold shadow-sm"
                   >
                     {saving ? "Saving..." : editId ? "Update" : "Create"}
                   </button>

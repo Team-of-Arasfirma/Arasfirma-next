@@ -33,6 +33,15 @@ const inquirySchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  crmSyncStatus: {
+    type: String,
+    enum: ['pending', 'success', 'failed', 'skipped'],
+    default: function () { return process.env.CRM_SYNC_ENABLED === 'true' ? 'pending' : 'skipped'; },
+  },
+  crmLeadId: { type: String, default: '' },
+  crmError: { type: String, default: '' },
+  crmSyncedAt: { type: Date, default: null },
+  crmRetryCount: { type: Number, default: 0 },
   status: {
     type: String,
     enum: ['unread', 'read'],

@@ -52,6 +52,7 @@ const ProjectGallery = () => {
             name:
               firstText(project.title, project.name, project.projectName) ||
               "Untitled Project",
+            location: firstText(project.location) || "",
             category: firstText(project.category) || "General",
             categoryLabel: formatTitleCase(project.category || "General"),
             image: getProjectImage(project),
@@ -203,7 +204,10 @@ const ProjectGallery = () => {
                 data-animate="zoom"
                 data-delay={i * 80}
                 className="relative w-full overflow-hidden rounded-2xl shadow-sm group sm:max-w-[430px]"
-                style={{ aspectRatio: "4/3", "--animate-delay": `${i * 80}ms` }}
+                style={{
+                  aspectRatio: "4/3",
+                  "--animate-delay": `${i * 80}ms`,
+                }}
               >
                 <img
                   src={proj.image}
@@ -230,9 +234,11 @@ const ProjectGallery = () => {
                     {formatTitleCase(proj.name)}
                   </p>
 
-                  <p className="text-red-300 text-xs font-semibold mt-1 uppercase tracking-wide">
-                    {proj.categoryLabel}
-                  </p>
+                  {proj.location && (
+                    <p className="text-red-300 text-xs font-semibold mt-1 uppercase tracking-wide">
+                      {formatTitleCase(proj.location)}
+                    </p>
+                  )}
                 </div>
 
                 <div className="absolute bottom-0 left-0 right-0 h-1 bg-red-600 group-hover:h-1.5 transition-all duration-300" />

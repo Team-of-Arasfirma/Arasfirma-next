@@ -1,4 +1,30 @@
 import Inquiry from '../models/Inquiry.js';
+import { syncInquiryToCrm } from '../services/crmService.js';
+
+const syncSavedInquiry = async (inquiry) => {
+  try {
+    const result = await syncInquiryToCrm(inquiry);
+    if (result.skipped) {
+      await Inquiry.updateOne({ _id: inquiry._id }, {
+        $set: { crmSyncStatus: 'skipped', crmError: '', crmSyncedAt: null },
+      });
+      return;
+    }
+    const update = {
+      $set: {
+        crmSyncStatus: result.success ? 'success' : 'failed',
+        crmError: result.success ? '' : (result.error || 'CRM sync failed'),
+        crmSyncedAt: new Date(),
+      },
+    };
+    if (result.success) update.$set.crmLeadId = result.leadId || '';
+    else update.$inc = { crmRetryCount: 1 };
+    await Inquiry.updateOne({ _id: inquiry._id }, update);
+  } catch {
+    // Never log provider errors, request payloads, or credentials.
+    console.error('Unable to persist inquiry CRM sync result');
+  }
+};
 
 export const createInquiry = async (req, res) => {
   try {
@@ -20,11 +46,16 @@ export const createInquiry = async (req, res) => {
       businessName,
       city,
       sqFt,
-      isQuote: !!isQuote,
+      isQuote: isQuote === true,
+      crmSyncStatus: process.env.CRM_SYNC_ENABLED === 'true' ? 'pending' : 'skipped',
+      crmError: '',
       status: 'unread',
     });
 
     res.status(201).json({ success: true, inquiry });
+    if (inquiry.crmSyncStatus === 'pending') {
+      setImmediate(() => { void syncSavedInquiry(inquiry); });
+    }
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

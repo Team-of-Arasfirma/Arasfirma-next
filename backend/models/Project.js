@@ -1,16 +1,48 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const projectSchema = new mongoose.Schema({
-  title: { type: String, required: true, trim: true },
-  category: { type: String, required: true, trim: true },
-  images: [{ type: String }],
-  status: {
-    type: String,
-    enum: ['draft', 'published'],
-    default: 'draft',
-    required: true,
+const projectSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    category: {
+      type: String,
+      required: true,
+      trim: true,
+      enum: [
+        "Industrial Building",
+        "Warehouses",
+        "Commercial Building",
+        "Cold Storage",
+        "Agriculture",
+      ],
+    },
+
+    location: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    images: [
+      {
+        type: String,
+      },
+    ],
+
+    status: {
+      type: String,
+      enum: ["draft", "published"],
+      default: "draft",
+      required: true,
+    },
   },
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-const Project = mongoose.model('Project', projectSchema);
+const Project = mongoose.model("Project", projectSchema);
+
 export default Project;
