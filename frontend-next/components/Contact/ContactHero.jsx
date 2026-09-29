@@ -7,16 +7,12 @@ import api from "@/lib/api/axios";
 const ContactHero = () => {
   const [form, setForm] = useState({
     name: "",
-
     phone: "",
-
     email: "",
-
     message: "",
   });
 
   const [loading, setLoading] = useState(false);
-
   const [success, setSuccess] = useState(false);
 
   const handleChange = (e) =>
@@ -27,7 +23,6 @@ const ContactHero = () => {
 
     if (!form.name.trim() || !form.phone.trim() || !form.email.trim()) {
       alert("Please fill all required fields.");
-
       return;
     }
 
@@ -35,22 +30,28 @@ const ContactHero = () => {
 
     try {
       await api.post("/inquiries", {
-        name: form.name,
-
-        phone: form.phone,
-
-        email: form.email,
-
+        name: form.name.trim(),
+        phone: form.phone.trim(),
+        email: form.email.trim(),
         subject: "Website Contact Form",
+        message: form.message.trim() || "No message provided",
 
-        message: form.message || "No message provided",
+        // CRM mapping support
+        businessName: "",
+        city: "Not Provided",
+        sqFt: "",
+        isQuote: false,
       });
 
       setLoading(false);
-
       setSuccess(true);
 
-      setForm({ name: "", phone: "", email: "", message: "" });
+      setForm({
+        name: "",
+        phone: "",
+        email: "",
+        message: "",
+      });
 
       setTimeout(() => setSuccess(false), 4000);
     } catch (err) {
@@ -66,37 +67,30 @@ const ContactHero = () => {
   return (
     <section
       className="w-full relative overflow-hidden pt-36 pb-20 px-6"
-
       style={{
         background:
           "linear-gradient(135deg, #fff7f7 0%, #ffe4e6 50%, #ffffff 100%)",
       }}
     >
       {/* Soft Red Blobs */}
-
       <div
         className="absolute top-20 left-10 w-72 h-72 rounded-full opacity-30"
-
         style={{
           background: "radial-gradient(circle, #f87171, transparent 70%)",
-
           filter: "blur(60px)",
         }}
       />
 
       <div
         className="absolute bottom-10 right-10 w-96 h-96 rounded-full opacity-20"
-
         style={{
           background: "radial-gradient(circle, #ef4444, transparent 70%)",
-
           filter: "blur(80px)",
         }}
       />
 
       <div className="relative z-10 max-w-7xl mx-auto flex flex-col md:flex-row gap-12">
         {/* LEFT */}
-
         <div className="flex-1">
           <span className="text-red-600 text-xs uppercase tracking-widest font-semibold">
             Get In Touch
@@ -114,52 +108,35 @@ const ContactHero = () => {
           </p>
 
           {/* Contact Info */}
-
           <div className="flex flex-col gap-4">
             {[
               {
                 icon: "📞",
-
                 label: "Call Us",
-
                 value: "+91 99440 15565",
-
                 href: "tel:+919944015565",
               },
-
               {
                 icon: "✉️",
-
                 label: "Email Us",
-
                 value: "info@arasfirma.com",
-
                 href: "mailto:info@arasfirma.com",
               },
-
               {
                 icon: "📍",
-
                 label: "Visit Us",
-
                 value: "Avinashi, Tamil Nadu, India",
-
                 href: "#",
               },
-
               {
                 icon: "🕘",
-
                 label: "Working Hours",
-
                 value: "Mon – Sat, 9:00 AM – 6:00 PM",
-
                 href: null,
               },
             ].map((item, i) => (
               <div
                 key={i}
-
                 className="flex items-center gap-4 px-5 py-4 rounded-xl bg-white border border-gray-200 shadow-sm hover:shadow-md transition"
               >
                 <div className="text-xl">{item.icon}</div>
@@ -172,11 +149,8 @@ const ContactHero = () => {
                   {item.href ? (
                     <a
                       href={item.href}
-
                       target="_blank"
-
                       rel="noopener noreferrer"
-
                       className="text-gray-900 font-bold hover:text-red-600"
                     >
                       {item.value}
@@ -191,10 +165,11 @@ const ContactHero = () => {
         </div>
 
         {/* RIGHT FORM */}
-
         <div className="flex-1">
           <div className="p-8 rounded-2xl bg-white border border-gray-200 shadow-lg">
-            <h2 className="text-xl text-gray-900 font-bold mb-6">Contact Us</h2>
+            <h2 className="text-xl text-gray-900 font-bold mb-6">
+              Contact Us
+            </h2>
 
             {success && (
               <div className="mb-4 text-green-600 font-semibold">
@@ -205,66 +180,44 @@ const ContactHero = () => {
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <input
                 type="text"
-
                 name="name"
-
                 value={form.name}
-
                 onChange={handleChange}
-
                 placeholder="Full Name *"
-
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:outline-none"
               />
 
               <input
                 type="tel"
-
                 name="phone"
-
                 value={form.phone}
-
                 onChange={handleChange}
-
                 placeholder="Mobile No. *"
-
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:outline-none"
               />
 
               <input
                 type="email"
-
                 name="email"
-
                 value={form.email}
-
                 onChange={handleChange}
-
                 placeholder="Email Address *"
-
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:outline-none"
               />
 
               <textarea
                 name="message"
-
                 value={form.message}
-
                 onChange={handleChange}
-
                 placeholder="Your Message"
-
                 rows={4}
-
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:outline-none resize-none"
               />
 
               <button
                 type="submit"
-
                 disabled={loading}
-
-                className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition"
+                className="bg-red-600 hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg transition"
               >
                 {loading ? "Sending..." : "Send Message"}
               </button>
