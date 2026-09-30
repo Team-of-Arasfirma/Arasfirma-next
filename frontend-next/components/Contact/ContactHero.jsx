@@ -9,6 +9,7 @@ const ContactHero = () => {
     name: "",
     phone: "",
     email: "",
+    city: "",
     message: "",
   });
 
@@ -21,7 +22,12 @@ const ContactHero = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.name.trim() || !form.phone.trim() || !form.email.trim()) {
+    if (
+      !form.name.trim() ||
+      !form.phone.trim() ||
+      !form.email.trim() ||
+      !form.city.trim()
+    ) {
       alert("Please fill all required fields.");
       return;
     }
@@ -38,7 +44,7 @@ const ContactHero = () => {
 
         // CRM mapping support
         businessName: "",
-        city: "Not Provided",
+        city: form.city.trim(),
         sqFt: "",
         isQuote: false,
       });
@@ -50,6 +56,7 @@ const ContactHero = () => {
         name: "",
         phone: "",
         email: "",
+        city: "",
         message: "",
       });
 
@@ -202,6 +209,15 @@ const ContactHero = () => {
                 value={form.email}
                 onChange={handleChange}
                 placeholder="Email Address *"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:outline-none"
+              />
+
+              <input
+                type="text"
+                name="city"
+                value={form.city}
+                onChange={handleChange}
+                placeholder="City *"
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:outline-none"
               />
 
