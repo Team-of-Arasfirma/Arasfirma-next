@@ -2,4 +2,4 @@ User-agent: *
 Disallow: /admin
 Disallow: /login
 
-Sitemap: https://arasfirma.com/sitemap.xml
+Sitemap: https://www.arasfirma.com/sitemap.xml
