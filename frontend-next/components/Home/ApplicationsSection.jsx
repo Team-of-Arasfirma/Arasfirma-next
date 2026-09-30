@@ -7,12 +7,12 @@ import {
   API_BASE_URL,
   FALLBACK_IMAGE,
   assertProjectApiUrl,
-  categoryKey,
   formatTitleCase,
   firstText,
   extractProjects,
   isPublicProject,
   getProjectImage,
+  getProjectImages,
 } from "@/lib/services/projectService";
 
 const CARD_WIDTH = 280;
@@ -48,7 +48,7 @@ const ApplicationsSection = () => {
           {
             signal: controller.signal,
             cache: "no-store",
-          }
+          },
         );
 
         if (!response.ok) {
@@ -57,26 +57,42 @@ const ApplicationsSection = () => {
 
         const data = await response.json();
 
-        const publishedProjects = extractProjects(data).filter(isPublicProject);
+        const publishedProjects = extractProjects(data)
+          .filter(isPublicProject)
+          .sort((a, b) => {
+            const dateA = new Date(a.createdAt || a.updatedAt || 0).getTime();
+            const dateB = new Date(b.createdAt || b.updatedAt || 0).getTime();
 
-        const categoryMap = new Map();
+            return dateB - dateA;
+          });
 
-        publishedProjects.forEach((project) => {
-          const category = firstText(project.category);
+        const dynamicApplications = publishedProjects.flatMap(
+          (project, projectIndex) => {
+            const images = getProjectImages(project);
 
-          if (!category) return;
+            const title =
+              firstText(project.title) ||
+              firstText(project.name) ||
+              firstText(project.category) ||
+              "Project";
 
-          const key = categoryKey(category);
+            if (!images.length) {
+              return [
+                {
+                  id: `${project._id || project.id || projectIndex}-fallback`,
+                  label: formatTitleCase(title),
+                  image: getProjectImage(project) || FALLBACK_IMAGE,
+                },
+              ];
+            }
 
-          if (!categoryMap.has(key)) {
-            categoryMap.set(key, {
-              label: formatTitleCase(category),
-              image: getProjectImage(project) || FALLBACK_IMAGE,
-            });
-          }
-        });
-
-        const dynamicApplications = Array.from(categoryMap.values());
+            return images.map((image, imageIndex) => ({
+              id: `${project._id || project.id || projectIndex}-${imageIndex}`,
+              label: formatTitleCase(title),
+              image: image || FALLBACK_IMAGE,
+            }));
+          },
+        );
 
         if (!controller.signal.aborted) {
           setApplications(dynamicApplications);
@@ -101,7 +117,7 @@ const ApplicationsSection = () => {
     if (!rowRef.current) return;
 
     const index = Math.round(
-      rowRef.current.scrollLeft / (CARD_WIDTH + CARD_GAP)
+      rowRef.current.scrollLeft / (CARD_WIDTH + CARD_GAP),
     );
 
     setActiveIndex(Math.min(index, applications.length - 1));
@@ -267,7 +283,7 @@ const ApplicationsSection = () => {
           {!loading &&
             applications.map((app) => (
               <div
-                key={app.label}
+                key={app.id}
                 onClick={() => {
                   if (!isDrag) goToProjects();
                 }}
