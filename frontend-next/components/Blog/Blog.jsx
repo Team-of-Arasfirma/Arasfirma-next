@@ -28,18 +28,43 @@ const getBlogUrl = (blog) => {
 
 const badgeStyle = (category) => {
   const map = {
-    Roofing: { bg: "bg-red-500", text: "Roofing" },
-    "Cold Storage": { bg: "bg-cyan-500", text: "Cold Storage" },
-    Installation: { bg: "bg-green-500", text: "Installation" },
+    Roofing: {
+      bg: "bg-red-500",
+      text: "Roofing",
+    },
+
+    "Cold Storage": {
+      bg: "bg-cyan-500",
+      text: "Cold Storage",
+    },
+
+    Installation: {
+      bg: "bg-green-500",
+      text: "Installation",
+    },
+
     "Poultry Farming": {
       bg: "bg-yellow-500",
       text: "Poultry Farming",
     },
-    Agriculture: { bg: "bg-lime-600", text: "Agriculture" },
-    General: { bg: "bg-gray-500", text: "General" },
+
+    Agriculture: {
+      bg: "bg-lime-600",
+      text: "Agriculture",
+    },
+
+    General: {
+      bg: "bg-gray-500",
+      text: "General",
+    },
   };
 
-  return map[category] || { bg: "bg-gray-500", text: category };
+  return (
+    map[category] || {
+      bg: "bg-gray-500",
+      text: category,
+    }
+  );
 };
 
 const decodeHtmlEntities = (value) => {
@@ -56,7 +81,9 @@ const decodeHtmlEntities = (value) => {
   }
 
   const txt = document.createElement("textarea");
+
   txt.innerHTML = value;
+
   return txt.value;
 };
 
@@ -65,10 +92,8 @@ const getCleanPreview = (content) => {
 
   let clean = decodeHtmlEntities(content);
 
-  // Remove HTML tags.
   clean = clean.replace(/<[^>]+>/g, "");
 
-  // Clean encoded characters and extra spaces.
   clean = clean
     .replace(/&nbsp;/g, " ")
     .replace(/&amp;/g, "&")
@@ -81,13 +106,18 @@ const getCleanPreview = (content) => {
 };
 
 const SkeletonCard = () => (
-  <div className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
+  <div className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse border border-gray-100 h-full flex flex-col">
     <div className="w-full h-56 bg-gray-200" />
-    <div className="p-5 space-y-3">
+
+    <div className="p-5 space-y-3 flex-1">
       <div className="h-3 bg-gray-100 rounded w-24" />
+
       <div className="h-4 bg-gray-200 rounded w-3/4" />
+
       <div className="h-4 bg-gray-200 rounded w-1/2" />
+
       <div className="h-3 bg-gray-100 rounded w-full" />
+
       <div className="h-3 bg-gray-100 rounded w-2/3" />
     </div>
   </div>
@@ -98,26 +128,42 @@ export default function Blog({
   initialPagination = {},
 }) {
   const firstBlogs = Array.isArray(initialBlogs)
-    ? initialBlogs.filter((blog) => blog && blog.published !== false)
+    ? initialBlogs.filter(
+        (blog) => blog && blog.published !== false,
+      )
     : [];
 
   const [blogs, setBlogs] = useState(firstBlogs);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState("All");
+
+  const [activeCategory, setActiveCategory] =
+    useState("All");
+
   const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState(initialPagination || {});
+
+  const [pagination, setPagination] = useState(
+    initialPagination || {},
+  );
+
   const [totalArticles, setTotalArticles] = useState(
     initialPagination?.total || firstBlogs.length || 0,
   );
+
   const [latestYear, setLatestYear] = useState(() => {
-    if (firstBlogs.length === 0) return new Date().getFullYear();
+    if (firstBlogs.length === 0) {
+      return new Date().getFullYear();
+    }
 
     const years = firstBlogs
-      .map((blog) => new Date(blog.createdAt).getFullYear())
+      .map((blog) =>
+        new Date(blog.createdAt).getFullYear(),
+      )
       .filter(Boolean);
 
-    return years.length > 0 ? Math.max(...years) : new Date().getFullYear();
+    return years.length > 0
+      ? Math.max(...years)
+      : new Date().getFullYear();
   });
 
   const LIMIT = 9;
@@ -134,53 +180,85 @@ export default function Blog({
 
       if (shouldUseServerBlogs) {
         setBlogs(firstBlogs);
+
         setPagination(initialPagination || {});
-        setTotalArticles(initialPagination?.total || firstBlogs.length || 0);
+
+        setTotalArticles(
+          initialPagination?.total ||
+            firstBlogs.length ||
+            0,
+        );
+
         setLoading(false);
+
         return;
       }
 
       setLoading(true);
 
       try {
-        const params = { published: true, page, limit: LIMIT };
+        const params = {
+          published: true,
+          page,
+          limit: LIMIT,
+        };
 
-        if (search) params.search = search;
-        if (activeCategory !== "All") params.category = activeCategory;
+        if (search) {
+          params.search = search;
+        }
 
-        const { blogs: apiBlogs, pagination: apiPagination } =
-          await fetchBlogs(params);
+        if (activeCategory !== "All") {
+          params.category = activeCategory;
+        }
 
-        const publishedBlogs = apiBlogs.filter(isPublishedBlog);
+        const {
+          blogs: apiBlogs,
+          pagination: apiPagination,
+        } = await fetchBlogs(params);
 
-        const filteredBlogs = publishedBlogs.filter((blog) => {
-          const matchesSearch =
-            !search ||
-            [blog.title, blog.excerpt, blog.category, blog.author]
-              .filter(Boolean)
-              .join(" ")
-              .toLowerCase()
-              .includes(search.toLowerCase());
+        const publishedBlogs =
+          apiBlogs.filter(isPublishedBlog);
 
-          const matchesCategory =
-            activeCategory === "All" ||
-            normalizeCategory(blog.category) ===
-              normalizeCategory(activeCategory);
+        const filteredBlogs =
+          publishedBlogs.filter((blog) => {
+            const matchesSearch =
+              !search ||
+              [
+                blog.title,
+                blog.excerpt,
+                blog.category,
+                blog.author,
+              ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase()
+                .includes(search.toLowerCase());
 
-          return matchesSearch && matchesCategory;
-        });
+            const matchesCategory =
+              activeCategory === "All" ||
+              normalizeCategory(blog.category) ===
+                normalizeCategory(activeCategory);
+
+            return matchesSearch && matchesCategory;
+          });
 
         if (!isActive) return;
 
         setBlogs(filteredBlogs);
+
         setPagination(apiPagination || {});
+
         setTotalArticles(
-          apiPagination?.total || publishedBlogs.length || filteredBlogs.length,
+          apiPagination?.total ||
+            publishedBlogs.length ||
+            filteredBlogs.length,
         );
 
         if (publishedBlogs.length > 0) {
           const years = publishedBlogs
-            .map((blog) => new Date(blog.createdAt).getFullYear())
+            .map((blog) =>
+              new Date(blog.createdAt).getFullYear(),
+            )
             .filter(Boolean);
 
           if (years.length > 0) {
@@ -189,7 +267,10 @@ export default function Blog({
         }
       } catch (err) {
         if (isActive) {
-          console.error("Failed to fetch blogs:", err);
+          console.error(
+            "Failed to fetch blogs:",
+            err,
+          );
         }
       } finally {
         if (isActive) {
@@ -223,13 +304,18 @@ export default function Blog({
       >
         <div className="max-w-5xl mx-auto">
           <nav className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-            <Link href="/" className="hover:text-gray-600 transition-colors">
+            <Link
+              href="/"
+              className="hover:text-gray-600 transition-colors"
+            >
               Home
             </Link>
 
             <span>›</span>
 
-            <span className="text-red-500 font-semibold">Blog</span>
+            <span className="text-red-500 font-semibold">
+              Blog
+            </span>
           </nav>
 
           <div className="mb-4">
@@ -239,20 +325,30 @@ export default function Blog({
           </div>
 
           <h1 className="text-5xl md:text-6xl font-extrabold leading-tight">
-            <span className="text-gray-800">OUR </span>
-            <span className="text-red-500">BLOG</span>
+            <span className="text-gray-800">
+              OUR{" "}
+            </span>
+
+            <span className="text-red-500">
+              BLOG
+            </span>
           </h1>
 
           <p className="mt-4 text-gray-500 text-base max-w-xl leading-relaxed">
-            Stay updated with the latest insights, guides, and trends in PUF
-            panel technology, insulation solutions, and modern construction.
+            Stay updated with the latest insights,
+            guides, and trends in PUF panel technology,
+            insulation solutions, and modern
+            construction.
           </p>
 
           <div className="flex items-center gap-10 mt-8">
             <div>
               <p className="text-3xl font-extrabold text-red-500">
-                {loading ? "—" : `${totalArticles}+`}
+                {loading
+                  ? "—"
+                  : `${totalArticles}+`}
               </p>
+
               <p className="text-sm text-gray-400 mt-0.5">
                 Articles Published
               </p>
@@ -262,14 +358,20 @@ export default function Blog({
               <p className="text-3xl font-extrabold text-red-500">
                 {CATEGORIES.length - 1}+
               </p>
-              <p className="text-sm text-gray-400 mt-0.5">Categories</p>
+
+              <p className="text-sm text-gray-400 mt-0.5">
+                Categories
+              </p>
             </div>
 
             <div>
               <p className="text-3xl font-extrabold text-red-500">
                 {loading ? "—" : latestYear}
               </p>
-              <p className="text-sm text-gray-400 mt-0.5">Latest Year</p>
+
+              <p className="text-sm text-gray-400 mt-0.5">
+                Latest Year
+              </p>
             </div>
           </div>
         </div>
@@ -366,54 +468,58 @@ export default function Blog({
               {blogs
                 .filter((blog) => blog?.slug)
                 .map((blog) => {
-                  const badge = badgeStyle(blog.category);
+                  const badge = badgeStyle(
+                    blog.category,
+                  );
+
+                  const preview =
+                    blog.excerpt ||
+                    blog.metaDescription ||
+                    getCleanPreview(
+                      blog.content,
+                    );
 
                   return (
                     <Link
                       key={blog._id || blog.slug}
                       href={getBlogUrl(blog)}
-                      className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100"
+                      className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 h-full flex flex-col"
                     >
-                      <div className="relative w-full h-56 overflow-hidden bg-gray-100">
-                        {blog.image ? (
+                      {/* IMAGE ONLY IF EXISTS */}
+                      {blog.image && (
+                        <div className="relative w-full h-56 overflow-hidden bg-gray-100">
                           <img
                             src={blog.image}
-                            alt={blog.title}
+                            alt={blog.title || "Blog image"}
                             loading="lazy"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            onError={(e) => {
-                              e.currentTarget.src =
-                                "https://placehold.co/400x224?text=No+Image";
-                            }}
                           />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-red-50 to-gray-100">
-                            <svg
-                              className="w-12 h-12 text-red-200"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
+
+                          {blog.category && (
+                            <span
+                              className={`absolute top-3 left-3 ${badge.bg} text-white text-xs font-bold px-3 py-1 rounded-full shadow`}
                             >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={1}
-                                d="M4 16l4-4a3 3 0 014 0l4 4m0 0l-1-1a3 3 0 014 0l3 3"
-                              />
-                            </svg>
-                          </div>
-                        )}
+                              {badge.text}
+                            </span>
+                          )}
+                        </div>
+                      )}
 
-                        {blog.category && (
-                          <span
-                            className={`absolute top-3 left-3 ${badge.bg} text-white text-xs font-bold px-3 py-1 rounded-full shadow`}
-                          >
-                            {badge.text}
-                          </span>
-                        )}
-                      </div>
+                      {/* CONTENT */}
+                      <div className="p-5 flex flex-col flex-1">
+                        {/* CATEGORY FOR NO IMAGE */}
+                        {!blog.image &&
+                          blog.category && (
+                            <div className="mb-3">
+                              <span
+                                className={`inline-flex ${badge.bg} text-white text-xs font-bold px-3 py-1 rounded-full`}
+                              >
+                                {badge.text}
+                              </span>
+                            </div>
+                          )}
 
-                      <div className="p-5">
+                        {/* DATE */}
                         <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-3">
                           <svg
                             className="w-4 h-4"
@@ -430,7 +536,9 @@ export default function Blog({
                           </svg>
 
                           {blog.createdAt
-                            ? new Date(blog.createdAt).toLocaleDateString(
+                            ? new Date(
+                                blog.createdAt,
+                              ).toLocaleDateString(
                                 "en-US",
                                 {
                                   month: "long",
@@ -441,16 +549,28 @@ export default function Blog({
                             : ""}
                         </div>
 
+                        {/* TITLE */}
                         <h2 className="font-bold text-gray-800 text-base leading-snug line-clamp-2 group-hover:text-red-500 transition-colors">
                           {blog.title}
                         </h2>
 
-                        <p className="text-gray-500 text-sm mt-2 line-clamp-2 leading-relaxed">
-                          {blog.excerpt || blog.metaDescription || ""}
-                        </p>
+                        {/* DESCRIPTION */}
+                        {preview && (
+                          <p
+                            className={`text-gray-500 text-sm mt-2 leading-relaxed ${
+                              blog.image
+                                ? "line-clamp-2"
+                                : "line-clamp-6"
+                            }`}
+                          >
+                            {preview}
+                          </p>
+                        )}
 
-                        <div className="flex items-center gap-2 mt-4 text-red-500 font-bold text-sm group-hover:gap-3 transition-all">
+                        {/* READ MORE */}
+                        <div className="flex items-center gap-2 mt-auto pt-4 text-red-500 font-bold text-sm group-hover:gap-3 transition-all">
                           Read More
+
                           <span className="w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center">
                             <svg
                               className="w-3.5 h-3.5"
@@ -473,22 +593,33 @@ export default function Blog({
                 })}
             </div>
 
+            {/* PAGINATION */}
             {pagination.pages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-14">
+              <div className="flex items-center justify-center gap-2 mt-14 flex-wrap">
                 <button
                   type="button"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  onClick={() =>
+                    setPage((p) =>
+                      Math.max(1, p - 1),
+                    )
+                  }
                   disabled={page === 1}
                   className="px-5 py-2 border border-gray-200 rounded-full text-sm text-gray-600 hover:border-red-400 hover:text-red-500 disabled:opacity-40 transition-colors"
                 >
                   ← Previous
                 </button>
 
-                {[...Array(pagination.pages)].map((_, i) => (
+                {[
+                  ...Array(
+                    pagination.pages,
+                  ),
+                ].map((_, i) => (
                   <button
                     key={i}
                     type="button"
-                    onClick={() => setPage(i + 1)}
+                    onClick={() =>
+                      setPage(i + 1)
+                    }
                     className={`w-9 h-9 rounded-full text-sm font-semibold transition-colors ${
                       page === i + 1
                         ? "bg-red-500 text-white"
@@ -502,9 +633,16 @@ export default function Blog({
                 <button
                   type="button"
                   onClick={() =>
-                    setPage((p) => Math.min(pagination.pages, p + 1))
+                    setPage((p) =>
+                      Math.min(
+                        pagination.pages,
+                        p + 1,
+                      ),
+                    )
                   }
-                  disabled={page === pagination.pages}
+                  disabled={
+                    page === pagination.pages
+                  }
                   className="px-5 py-2 border border-gray-200 rounded-full text-sm text-gray-600 hover:border-red-400 hover:text-red-500 disabled:opacity-40 transition-colors"
                 >
                   Next →

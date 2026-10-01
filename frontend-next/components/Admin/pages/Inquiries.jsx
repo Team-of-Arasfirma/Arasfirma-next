@@ -2,14 +2,49 @@
 
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+
 import {
   adminDeleteInquiry,
   adminFetchInquiries,
   adminUpdateInquiryStatus,
 } from "@/lib/services/inquiryService";
+
 import { useAuth } from "../context/AuthContext";
 import { canEdit, canDelete } from "@/lib/adminPermissions";
 import AccessDeniedModal from "@/components/Admin/common/AccessDeniedModal";
+
+const PAGE_LIMITS = [20, 100, 500, 2500];
+
+const getVisiblePages = (currentPage, totalPages) => {
+  if (totalPages <= 5) {
+    return Array.from(
+      { length: totalPages },
+      (_, index) => index + 1,
+    );
+  }
+
+  if (currentPage <= 3) {
+    return [1, 2, 3, 4, totalPages];
+  }
+
+  if (currentPage >= totalPages - 2) {
+    return [
+      1,
+      totalPages - 3,
+      totalPages - 2,
+      totalPages - 1,
+      totalPages,
+    ];
+  }
+
+  return [
+    1,
+    currentPage - 1,
+    currentPage,
+    currentPage + 1,
+    totalPages,
+  ];
+};
 
 const AdminInquiries = () => {
   const { user, admin } = useAuth();
@@ -20,9 +55,18 @@ const AdminInquiries = () => {
 
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
-  const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
+
+  const [limit, setLimit] = useState(20);
+
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pages: 1,
+    total: 0,
+  });
+
   const [selected, setSelected] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [deniedMessage, setDeniedMessage] = useState("");
@@ -40,10 +84,11 @@ const AdminInquiries = () => {
           search,
           status,
           page,
-          limit: 10,
+          limit,
         });
 
         setInquiries(data.inquiries || []);
+
         setPagination({
           page: data.page || page,
           pages: data.pages || 1,
@@ -51,44 +96,69 @@ const AdminInquiries = () => {
         });
       } catch (err) {
         if (err?.response?.status === 403) {
-          showDenied("You don't have permission to view inquiries.");
+          showDenied(
+            "You don't have permission to view inquiries.",
+          );
         } else {
-          toast.error(err.response?.data?.message || "Failed to load inquiries");
+          toast.error(
+            err.response?.data?.message ||
+              "Failed to load inquiries",
+          );
         }
       } finally {
         setLoading(false);
       }
     },
-    [search, status]
+    [search, status, limit],
   );
 
   useEffect(() => {
     const timeout = setTimeout(() => load(1), 250);
+
     return () => clearTimeout(timeout);
   }, [load]);
 
   useEffect(() => {
-    const interval = setInterval(() => load(pagination.page), 60000);
+    const interval = setInterval(
+      () => load(pagination.page),
+      60000,
+    );
+
     return () => clearInterval(interval);
   }, [load, pagination.page]);
 
+  const handleLimitChange = (size) => {
+    setLimit(size);
+
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+    }));
+  };
+
   const handleStatus = async (item) => {
     if (!allowEdit) {
-      showDenied("You don't have permission to update inquiry status.");
+      showDenied(
+        "You don't have permission to update inquiry status.",
+      );
+
       return;
     }
 
     try {
       await adminUpdateInquiryStatus(
         item._id,
-        item.status === "read" ? "unread" : "read"
+        item.status === "read" ? "unread" : "read",
       );
 
       toast.success("Inquiry status updated");
+
       load(pagination.page);
     } catch (err) {
       if (err?.response?.status === 403) {
-        showDenied("You don't have permission to update inquiry status.");
+        showDenied(
+          "You don't have permission to update inquiry status.",
+        );
       } else {
         toast.error("Status update failed");
       }
@@ -97,7 +167,10 @@ const AdminInquiries = () => {
 
   const confirmDelete = (id) => {
     if (!allowDelete) {
-      showDenied("You don't have permission to delete inquiries.");
+      showDenied(
+        "You don't have permission to delete inquiries.",
+      );
+
       return;
     }
 
@@ -106,8 +179,12 @@ const AdminInquiries = () => {
 
   const handleDelete = async () => {
     if (!allowDelete) {
-      showDenied("You don't have permission to delete inquiries.");
+      showDenied(
+        "You don't have permission to delete inquiries.",
+      );
+
       setDeleteId(null);
+
       return;
     }
 
@@ -115,19 +192,39 @@ const AdminInquiries = () => {
       await adminDeleteInquiry(deleteId);
 
       toast.success("Inquiry deleted");
+
       setDeleteId(null);
+
       load(pagination.page);
     } catch (err) {
       if (err?.response?.status === 403) {
-        showDenied("You don't have permission to delete inquiries.");
+        showDenied(
+          "You don't have permission to delete inquiries.",
+        );
       } else {
         toast.error("Delete failed");
       }
     }
   };
 
+  const totalPages = Math.max(
+    Number(pagination.pages || 1),
+    1,
+  );
+
+  const currentPage = Math.min(
+    Number(pagination.page || 1),
+    totalPages,
+  );
+
+  const visiblePages = getVisiblePages(
+    currentPage,
+    totalPages,
+  );
+
   return (
     <div className="p-4 md:p-6">
+      {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">
@@ -135,12 +232,13 @@ const AdminInquiries = () => {
           </h1>
 
           <p className="text-sm text-gray-500 mt-0.5">
-            {pagination.total} inquir{pagination.total === 1 ? "y" : "ies"}{" "}
-            total
+            {pagination.total} inquir
+            {pagination.total === 1 ? "y" : "ies"} total
           </p>
         </div>
       </div>
 
+      {/* SEARCH + STATUS */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative max-w-sm flex-1">
           <svg
@@ -177,6 +275,7 @@ const AdminInquiries = () => {
         </select>
       </div>
 
+      {/* CONTENT */}
       {loading ? (
         <div className="flex justify-center py-16">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
@@ -187,6 +286,7 @@ const AdminInquiries = () => {
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          {/* TABLE */}
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-100">
               <thead className="bg-gray-50">
@@ -217,6 +317,7 @@ const AdminInquiries = () => {
                     key={item._id}
                     className="hover:bg-gray-50 transition-colors"
                   >
+                    {/* NAME */}
                     <td className="px-4 py-3 font-medium text-gray-800 text-sm">
                       {item.name}
 
@@ -229,6 +330,7 @@ const AdminInquiries = () => {
                         )}
                     </td>
 
+                    {/* TYPE */}
                     <td className="px-4 py-3">
                       <span
                         className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
@@ -241,14 +343,17 @@ const AdminInquiries = () => {
                       </span>
                     </td>
 
+                    {/* EMAIL */}
                     <td className="px-4 py-3 text-sm text-gray-600">
                       {item.email}
                     </td>
 
+                    {/* PHONE */}
                     <td className="px-4 py-3 text-sm text-gray-600">
                       {item.phone || "-"}
                     </td>
 
+                    {/* SUBJECT */}
                     <td className="px-4 py-3 text-sm text-gray-600">
                       <div>
                         <span className="font-medium text-gray-800">
@@ -257,12 +362,14 @@ const AdminInquiries = () => {
 
                         {item.isQuote && (
                           <span className="block text-[11px] text-blue-600 font-medium mt-0.5">
-                            City: {item.city || "-"} | Sq Ft: {item.sqFt || "-"}
+                            City: {item.city || "-"} | Sq Ft:{" "}
+                            {item.sqFt || "-"}
                           </span>
                         )}
                       </div>
                     </td>
 
+                    {/* STATUS */}
                     <td className="px-4 py-3">
                       <button
                         type="button"
@@ -277,14 +384,18 @@ const AdminInquiries = () => {
                       </button>
                     </td>
 
+                    {/* DATE */}
                     <td className="px-4 py-3 text-sm text-gray-500">
-                      {new Date(item.createdAt).toLocaleDateString("en-GB", {
+                      {new Date(
+                        item.createdAt,
+                      ).toLocaleDateString("en-GB", {
                         day: "2-digit",
                         month: "short",
                         year: "numeric",
                       })}
                     </td>
 
+                    {/* ACTIONS */}
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <button
@@ -298,7 +409,9 @@ const AdminInquiries = () => {
 
                         <button
                           type="button"
-                          onClick={() => confirmDelete(item._id)}
+                          onClick={() =>
+                            confirmDelete(item._id)
+                          }
                           className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title="Delete"
                         >
@@ -312,38 +425,76 @@ const AdminInquiries = () => {
             </table>
           </div>
 
-          {pagination.pages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-              <p className="text-sm text-gray-500">
-                Page {pagination.page} of {pagination.pages}
-              </p>
+          {/* PAGINATION */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 px-4 py-4 border-t border-gray-100">
+            {/* PAGE INFO */}
+            <p className="text-sm text-gray-500 shrink-0">
+              Page {currentPage} of {totalPages}
+            </p>
 
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => load(Math.max(1, pagination.page - 1))}
-                  disabled={pagination.page === 1}
-                  className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
-                >
-                  Previous
-                </button>
+            {/* PAGE NUMBERS */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                {visiblePages.map((pageNumber, index) => {
+                  const previousPage =
+                    visiblePages[index - 1];
 
+                  const showDots =
+                    index > 0 &&
+                    pageNumber - previousPage > 1;
+
+                  return (
+                    <div
+                      key={pageNumber}
+                      className="flex items-center gap-1.5"
+                    >
+                      {showDots && (
+                        <span className="px-1 text-sm text-gray-400">
+                          ...
+                        </span>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => load(pageNumber)}
+                        className={`min-w-[34px] h-8 px-2 rounded-lg text-sm font-medium transition-all ${
+                          currentPage === pageNumber
+                            ? "bg-blue-600 text-white shadow-sm"
+                            : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+                        }`}
+                      >
+                        {pageNumber}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* LIMIT SELECTOR */}
+            <div className="inline-flex items-center bg-gray-100 border border-gray-200 rounded-full p-1 w-fit shrink-0">
+              {PAGE_LIMITS.map((size) => (
                 <button
+                  key={size}
                   type="button"
                   onClick={() =>
-                    load(Math.min(pagination.pages, pagination.page + 1))
+                    handleLimitChange(size)
                   }
-                  disabled={pagination.page === pagination.pages}
-                  className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
+                  className={`min-w-[42px] px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    limit === size
+                      ? "bg-white text-gray-800 shadow-sm"
+                      : "text-gray-500 hover:text-gray-800"
+                  }`}
                 >
-                  Next
+                  {size}
                 </button>
-              </div>
+              ))}
             </div>
-          )}
+          </div>
         </div>
       )}
 
+      {/* VIEW MODAL */}
       {selected && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div
@@ -367,13 +518,17 @@ const AdminInquiries = () => {
                           : "bg-purple-100 text-purple-800 border border-purple-200"
                       }`}
                     >
-                      {selected.isQuote ? "Quote Request" : "Standard Inquiry"}
+                      {selected.isQuote
+                        ? "Quote Request"
+                        : "Standard Inquiry"}
                     </span>
                   </div>
 
                   <p className="text-xs text-gray-400 mt-1">
                     Received on{" "}
-                    {new Date(selected.createdAt).toLocaleString("en-GB")}
+                    {new Date(
+                      selected.createdAt,
+                    ).toLocaleString("en-GB")}
                   </p>
                 </div>
 
@@ -399,7 +554,8 @@ const AdminInquiries = () => {
                       </span>
 
                       <span className="text-gray-800 font-medium">
-                        {selected.businessName || selected.name}
+                        {selected.businessName ||
+                          selected.name}
                       </span>
                     </div>
 
@@ -438,6 +594,7 @@ const AdminInquiries = () => {
                   <span className="font-semibold text-gray-600">
                     Email Address:
                   </span>{" "}
+
                   <a
                     href={`mailto:${selected.email}`}
                     className="text-blue-600 hover:underline"
@@ -454,7 +611,10 @@ const AdminInquiries = () => {
                 </p>
 
                 <p>
-                  <span className="font-semibold text-gray-600">Status:</span>{" "}
+                  <span className="font-semibold text-gray-600">
+                    Status:
+                  </span>{" "}
+
                   <span
                     className={`capitalize font-semibold ${
                       selected.status === "unread"
@@ -481,6 +641,7 @@ const AdminInquiries = () => {
         </div>
       )}
 
+      {/* DELETE MODAL */}
       {deleteId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div

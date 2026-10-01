@@ -1,5 +1,4 @@
 "use client";
-// src/admin/pages/Blogs.jsx
 
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-hot-toast";
@@ -41,6 +40,8 @@ const URL_CATEGORIES = [
     value: "puf-panels/mushroom-farming",
   },
 ];
+
+const PAGE_LIMITS = [20, 100, 500, 2500];
 
 const generateSlug = (title) =>
   title
@@ -111,6 +112,47 @@ const badgeColor = (category) => {
   return map[category] || "bg-gray-100 text-gray-700";
 };
 
+const isNewBlog = (createdAt) => {
+  if (!createdAt) return false;
+
+  const createdTime = new Date(createdAt).getTime();
+
+  if (Number.isNaN(createdTime)) return false;
+
+  const TWO_DAYS = 2 * 24 * 60 * 60 * 1000;
+  const age = Date.now() - createdTime;
+
+  return age >= 0 && age < TWO_DAYS;
+};
+
+const getVisiblePages = (currentPage, totalPages) => {
+  if (totalPages <= 5) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  if (currentPage <= 3) {
+    return [1, 2, 3, 4, totalPages];
+  }
+
+  if (currentPage >= totalPages - 2) {
+    return [
+      1,
+      totalPages - 3,
+      totalPages - 2,
+      totalPages - 1,
+      totalPages,
+    ];
+  }
+
+  return [
+    1,
+    currentPage - 1,
+    currentPage,
+    currentPage + 1,
+    totalPages,
+  ];
+};
+
 export default function Blogs() {
   const { user, admin } = useAuth();
   const activeUser = user || admin;
@@ -129,11 +171,10 @@ export default function Blogs() {
   const [imagePreview, setImagePreview] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
   const [pagination, setPagination] = useState({});
   const [deleteId, setDeleteId] = useState(null);
   const [deniedMessage, setDeniedMessage] = useState("");
-
-  const LIMIT = 8;
 
   const showDenied = (message) => {
     setDeniedMessage(message);
@@ -143,11 +184,17 @@ export default function Blogs() {
     setLoading(true);
 
     try {
-      const params = { page, limit: LIMIT };
+      const params = {
+        page,
+        limit,
+      };
 
-      if (search) params.search = search;
+      if (search) {
+        params.search = search;
+      }
 
-      const { blogs: apiBlogs, pagination } = await fetchBlogCollection(params);
+      const { blogs: apiBlogs, pagination } =
+        await fetchBlogCollection(params);
 
       setBlogs(apiBlogs || []);
       setPagination(pagination || {});
@@ -160,7 +207,7 @@ export default function Blogs() {
     } finally {
       setLoading(false);
     }
-  }, [page, search]);
+  }, [page, search, limit]);
 
   useEffect(() => {
     fetchBlogs();
@@ -168,6 +215,11 @@ export default function Blogs() {
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
+    setPage(1);
+  };
+
+  const handleLimitChange = (size) => {
+    setLimit(size);
     setPage(1);
   };
 
@@ -220,7 +272,10 @@ export default function Blogs() {
     const newValue = type === "checkbox" ? checked : value;
 
     setForm((prev) => {
-      const updated = { ...prev, [name]: newValue };
+      const updated = {
+        ...prev,
+        [name]: newValue,
+      };
 
       if (name === "title" && !editBlog) {
         updated.slug = generateSlug(value);
@@ -259,10 +314,16 @@ export default function Blogs() {
       formData.append("image", file);
 
       const { data } = await api.post("/upload/image", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
-      setForm((prev) => ({ ...prev, image: data.imageUrl }));
+      setForm((prev) => ({
+        ...prev,
+        image: data.imageUrl,
+      }));
+
       toast.success("Image uploaded");
     } catch (error) {
       if (error?.response?.status === 403) {
@@ -289,6 +350,7 @@ export default function Blogs() {
     }
 
     const cleanedHtmlContent = cleanBlogContent(form.content);
+
     const cleanedTextContent = cleanedHtmlContent
       .replace(/<[^>]+>/g, "")
       .trim();
@@ -347,7 +409,9 @@ export default function Blogs() {
       await api.delete(`/blogs/${deleteId}`);
 
       toast.success("Blog deleted");
+
       setDeleteId(null);
+
       fetchBlogs();
     } catch (error) {
       if (error?.response?.status === 403) {
@@ -372,6 +436,7 @@ export default function Blogs() {
       });
 
       toast.success(blog.published ? "Set to Draft" : "Published");
+
       fetchBlogs();
     } catch (error) {
       if (error?.response?.status === 403) {
@@ -382,12 +447,23 @@ export default function Blogs() {
     }
   };
 
+  const totalPages = Math.max(Number(pagination.pages || 1), 1);
+
+  const currentPage = Math.min(
+    Number(pagination.page || page || 1),
+    totalPages,
+  );
+
+  const visiblePages = getVisiblePages(currentPage, totalPages);
+
   return (
     <div className="p-4 md:p-6">
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Blog Management</h1>
+          <h1 className="text-2xl font-bold text-gray-800">
+            Blog Management
+          </h1>
 
           <p className="text-sm text-gray-500 mt-0.5">
             {pagination.total ?? 0} blog
@@ -413,6 +489,7 @@ export default function Blogs() {
               d="M12 4v16m8-8H4"
             />
           </svg>
+
           Add Blog
         </button>
       </div>
@@ -490,24 +567,31 @@ export default function Blogs() {
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     Image
                   </th>
+
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     Title
                   </th>
+
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">
                     Category
                   </th>
+
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">
                     URL Category
                   </th>
+
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">
                     Author
                   </th>
+
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     Status
                   </th>
+
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">
                     Date
                   </th>
+
                   <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     Actions
                   </th>
@@ -520,6 +604,7 @@ export default function Blogs() {
                     key={blog._id}
                     className="hover:bg-gray-50 transition-colors"
                   >
+                    {/* IMAGE */}
                     <td className="px-4 py-3">
                       {blog.image ? (
                         <img
@@ -550,37 +635,51 @@ export default function Blogs() {
                       )}
                     </td>
 
+                    {/* NEW LABEL FIRST + TITLE */}
                     <td className="px-4 py-3">
-                      <p className="font-medium text-gray-800 text-sm line-clamp-1">
-                        {blog.title}
-                      </p>
+                      <div className="flex items-center gap-2 min-w-0">
+                        {isNewBlog(blog.createdAt) && (
+                          <span className="shrink-0 inline-flex items-center px-2 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold uppercase tracking-wide">
+                            New
+                          </span>
+                        )}
+
+                        <p className="font-medium text-gray-800 text-sm line-clamp-1">
+                          {blog.title}
+                        </p>
+                      </div>
+
                       <p className="text-xs text-gray-400 mt-0.5">
                         /{blog.categorySlug || "puf-panels"}/{blog.slug}
                       </p>
                     </td>
 
+                    {/* CATEGORY */}
                     <td className="px-4 py-3 hidden md:table-cell">
                       <span
                         className={`inline-flex items-center justify-center w-32 h-7 rounded-full text-xs font-semibold whitespace-nowrap overflow-hidden text-ellipsis ${badgeColor(
-                          blog.category
+                          blog.category,
                         )}`}
                       >
                         {blog.category || "General"}
                       </span>
                     </td>
 
+                    {/* URL CATEGORY */}
                     <td className="px-4 py-3 hidden lg:table-cell">
                       <span className="text-xs text-gray-500 font-mono">
                         /{blog.categorySlug || "puf-panels"}/
                       </span>
                     </td>
 
+                    {/* AUTHOR */}
                     <td className="px-4 py-3 hidden md:table-cell">
                       <span className="text-sm text-gray-600">
                         {blog.author}
                       </span>
                     </td>
 
+                    {/* STATUS */}
                     <td className="px-4 py-3">
                       <button
                         type="button"
@@ -593,13 +692,17 @@ export default function Blogs() {
                       >
                         <span
                           className={`w-1.5 h-1.5 rounded-full ${
-                            blog.published ? "bg-green-500" : "bg-yellow-500"
+                            blog.published
+                              ? "bg-green-500"
+                              : "bg-yellow-500"
                           }`}
                         />
+
                         {blog.published ? "Published" : "Draft"}
                       </button>
                     </td>
 
+                    {/* DATE */}
                     <td className="px-4 py-3 hidden lg:table-cell text-sm text-gray-500">
                       {new Date(blog.createdAt).toLocaleDateString("en-GB", {
                         day: "2-digit",
@@ -608,6 +711,7 @@ export default function Blogs() {
                       })}
                     </td>
 
+                    {/* ACTIONS */}
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
@@ -659,35 +763,65 @@ export default function Blogs() {
             </table>
           </div>
 
-          {pagination.pages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-              <p className="text-sm text-gray-500">
-                Page {pagination.page} of {pagination.pages}
-              </p>
+          {/* PAGINATION */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 px-4 py-4 border-t border-gray-100">
+            <p className="text-sm text-gray-500">
+              Page {currentPage} of {totalPages}
+            </p>
 
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
-                >
-                  Previous
-                </button>
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                {visiblePages.map((pageNumber, index) => {
+                  const previousPage = visiblePages[index - 1];
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    setPage((p) => Math.min(pagination.pages, p + 1))
-                  }
-                  disabled={page === pagination.pages}
-                  className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
-                >
-                  Next
-                </button>
+                  const showDots =
+                    index > 0 && pageNumber - previousPage > 1;
+
+                  return (
+                    <div
+                      key={pageNumber}
+                      className="flex items-center gap-1.5"
+                    >
+                      {showDots && (
+                        <span className="px-1 text-gray-400 text-sm">
+                          ...
+                        </span>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => setPage(pageNumber)}
+                        className={`min-w-[34px] h-8 px-2 rounded-lg text-sm font-medium transition-all ${
+                          currentPage === pageNumber
+                            ? "bg-blue-600 text-white shadow-sm"
+                            : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+                        }`}
+                      >
+                        {pageNumber}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
+            )}
+
+            <div className="inline-flex items-center bg-gray-100 border border-gray-200 rounded-full p-1 w-fit">
+              {PAGE_LIMITS.map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => handleLimitChange(size)}
+                  className={`min-w-[42px] px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    limit === size
+                      ? "bg-white text-gray-800 shadow-sm"
+                      : "text-gray-500 hover:text-gray-800"
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
             </div>
-          )}
+          </div>
         </div>
       )}
 
@@ -716,6 +850,7 @@ export default function Blogs() {
               </div>
 
               <form onSubmit={handleSubmit} className="p-5 space-y-4">
+                {/* TITLE */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Title <span className="text-red-500">*</span>
@@ -732,6 +867,7 @@ export default function Blogs() {
                   />
                 </div>
 
+                {/* SLUG */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Slug <span className="text-red-500">*</span>
@@ -763,6 +899,7 @@ export default function Blogs() {
                   </div>
                 </div>
 
+                {/* CATEGORY */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Category
@@ -775,22 +912,27 @@ export default function Blogs() {
                           form.category === cat
                             ? "bg-red-600 text-white"
                             : "bg-red-100 text-red-700",
+
                         "Cold Storage":
                           form.category === cat
                             ? "bg-cyan-600 text-white"
                             : "bg-cyan-100 text-cyan-700",
+
                         Installation:
                           form.category === cat
                             ? "bg-green-600 text-white"
                             : "bg-green-100 text-green-700",
+
                         "Poultry Farming":
                           form.category === cat
                             ? "bg-yellow-500 text-white"
                             : "bg-yellow-100 text-yellow-700",
+
                         Agriculture:
                           form.category === cat
                             ? "bg-lime-600 text-white"
                             : "bg-lime-100 text-lime-700",
+
                         General:
                           form.category === cat
                             ? "bg-gray-700 text-white"
@@ -802,7 +944,10 @@ export default function Blogs() {
                           key={cat}
                           type="button"
                           onClick={() =>
-                            setForm((prev) => ({ ...prev, category: cat }))
+                            setForm((prev) => ({
+                              ...prev,
+                              category: cat,
+                            }))
                           }
                           className={`px-3 py-1 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${colorMap[cat]}`}
                         >
@@ -813,6 +958,7 @@ export default function Blogs() {
                   </div>
                 </div>
 
+                {/* URL CATEGORY */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     URL Category
@@ -838,6 +984,7 @@ export default function Blogs() {
                   </p>
                 </div>
 
+                {/* CONTENT */}
                 <div className="space-y-1">
                   <label className="block text-sm font-medium text-gray-700">
                     Content <span className="text-red-500">*</span>
@@ -846,12 +993,16 @@ export default function Blogs() {
                   <RichTextEditor
                     value={form.content}
                     onChange={(val) =>
-                      setForm((prev) => ({ ...prev, content: val }))
+                      setForm((prev) => ({
+                        ...prev,
+                        content: val,
+                      }))
                     }
                     placeholder="Write blog content..."
                   />
                 </div>
 
+                {/* IMAGE */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Blog Image
@@ -863,7 +1014,10 @@ export default function Blogs() {
                         {uploading ? (
                           <div className="flex items-center justify-center gap-2 text-blue-500">
                             <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                            <span className="text-sm">Uploading...</span>
+
+                            <span className="text-sm">
+                              Uploading...
+                            </span>
                           </div>
                         ) : (
                           <p className="text-xs text-gray-400">
@@ -892,7 +1046,11 @@ export default function Blogs() {
                           type="button"
                           onClick={() => {
                             setImagePreview("");
-                            setForm((prev) => ({ ...prev, image: "" }));
+
+                            setForm((prev) => ({
+                              ...prev,
+                              image: "",
+                            }));
                           }}
                           className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
                         >
@@ -903,6 +1061,7 @@ export default function Blogs() {
                   </div>
                 </div>
 
+                {/* SEO */}
                 <div className="border border-gray-200 rounded-xl overflow-hidden">
                   <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-200">
                     <h3 className="text-sm font-semibold text-gray-700">
@@ -912,14 +1071,22 @@ export default function Blogs() {
 
                   <div className="p-4 space-y-4">
                     <div className="bg-white border border-gray-100 rounded-lg p-3">
-                      <p className="text-xs text-gray-400 mb-2">Preview</p>
+                      <p className="text-xs text-gray-400 mb-2">
+                        Preview
+                      </p>
+
                       <p className="text-xs text-green-700">
-                        arasfirma.com › {form.categorySlug || "puf-panels"} ›{" "}
+                        arasfirma.com ›{" "}
+                        {form.categorySlug || "puf-panels"} ›{" "}
                         {form.slug || "blog-slug"}
                       </p>
+
                       <p className="text-base text-blue-600 font-medium leading-snug mt-0.5 line-clamp-1">
-                        {form.metaTitle || form.title || "Page Title"}
+                        {form.metaTitle ||
+                          form.title ||
+                          "Page Title"}
                       </p>
+
                       <p className="text-xs text-gray-500 mt-1 line-clamp-2">
                         {form.metaDescription ||
                           "Meta description will appear here..."}
@@ -982,6 +1149,7 @@ export default function Blogs() {
                   </div>
                 </div>
 
+                {/* PUBLISH */}
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                   <div>
                     <p className="text-sm font-medium text-gray-700">
@@ -1004,17 +1172,22 @@ export default function Blogs() {
                       }))
                     }
                     className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${
-                      form.published ? "bg-green-500" : "bg-gray-300"
+                      form.published
+                        ? "bg-green-500"
+                        : "bg-gray-300"
                     }`}
                   >
                     <span
                       className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${
-                        form.published ? "translate-x-5" : "translate-x-0"
+                        form.published
+                          ? "translate-x-5"
+                          : "translate-x-0"
                       }`}
                     />
                   </button>
                 </div>
 
+                {/* ACTIONS */}
                 <div className="flex gap-3 pt-2">
                   <button
                     type="button"
@@ -1032,6 +1205,7 @@ export default function Blogs() {
                     {saving ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+
                         {editBlog ? "Saving..." : "Creating..."}
                       </>
                     ) : editBlog ? (
@@ -1047,6 +1221,7 @@ export default function Blogs() {
         </div>
       )}
 
+      {/* DELETE */}
       {deleteId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
