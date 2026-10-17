@@ -70,7 +70,7 @@ const WhyChooseUs = () => {
       <div className="mx-auto max-w-7xl">
         <div data-animate="up" className="mb-10 text-center md:mb-12">
           <p className="mb-2 text-xs font-bold uppercase tracking-widest text-gray-400">
-            Our Strengths
+            Our Strength
           </p>
           <h2 className="mb-3 text-xl font-black uppercase text-gray-900 sm:text-2xl md:text-4xl">
             Why Choose Us?

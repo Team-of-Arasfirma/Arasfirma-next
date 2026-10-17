@@ -10,6 +10,7 @@ const products = [
     color: "#f0fdf4",
     badge: "New",
     link: "/products/concealed",
+    cover: false,
   },
   {
     name: "Roof Panel",
@@ -18,6 +19,7 @@ const products = [
     color: "#eff6ff",
     badge: "Popular",
     link: "/products/roof-panel",
+    cover: false,
   },
   {
     name: "Mono Wall",
@@ -26,14 +28,16 @@ const products = [
     color: "#fff7ed",
     badge: null,
     link: "/products/mono-wall",
+    cover: false,
   },
   {
     name: "Cold Storage PUF Panel",
     core: "Core: High Density PUF Insulation",
-    image: "/assets/products/Roof-panel.png",
-    color: "#ecfeff",
+    image: "/assets/products/cloud.png",
+    color: "#f8fafc",
     badge: "Cold Room",
     link: "/products/cold-storage-for-pufpanels",
+    cover: true,
   },
 ];
 
@@ -55,7 +59,11 @@ const ProductCard = ({ product, delay }) => {
           src={product.image}
           alt={product.name}
           loading="lazy"
-          className="h-40 max-w-[90%] object-contain transition-transform duration-300 group-hover:scale-110"
+          className={
+            product.cover
+              ? "h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              : "h-40 max-w-[90%] object-contain transition-transform duration-300 group-hover:scale-110"
+          }
         />
 
         {product.badge && (
